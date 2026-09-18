@@ -1,0 +1,1683 @@
+/* ============================================================
+   Visual HTML Editor — Editor UI Stylesheet (original work)
+   Warm "coral on cream" design system.
+   This whole stylesheet is injected as part of the editor and is
+   stripped from the document when the user saves (Save As).
+   ============================================================ */
+
+/* ---------- Content element marks ---------- */
+
+[data-hve-hovered] {
+  outline: 2px dashed #cc785c !important;
+  outline-offset: 2px !important;
+  cursor: pointer !important;
+}
+
+td[data-hve-hovered],
+th[data-hve-hovered],
+tr[data-hve-hovered] {
+  outline-offset: -2px !important;
+}
+
+[data-hve-selected] {
+  outline: 2px solid #cc785c !important;
+  outline-offset: 2px !important;
+}
+
+td[data-hve-selected],
+th[data-hve-selected],
+tr[data-hve-selected] {
+  outline-offset: -2px !important;
+}
+
+table[data-hve-selected] {
+  outline-offset: 2px !important;
+}
+
+[data-hve-multi-selected] {
+  outline: 2px solid #cc785c !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 4px rgba(204, 120, 92, 0.12) !important;
+}
+
+[data-hve-group][data-hve-selected] {
+  outline: 2px dashed #3aa08b !important;
+}
+
+[data-hve-dragging-source] {
+  opacity: 0.35 !important;
+}
+
+[data-hve-editing] {
+  outline: 2px solid #a9583e !important;
+  outline-offset: 2px !important;
+  cursor: text !important;
+  min-height: 1em;
+}
+
+td[data-hve-editing],
+th[data-hve-editing] {
+  outline-offset: -2px !important;
+}
+
+[data-hve-locked] {
+  position: relative;
+}
+
+[data-hve-locked]::after {
+  content: '🔒';
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  font-size: 12px;
+  line-height: 1;
+  z-index: 99;
+  pointer-events: none;
+  opacity: 0.75;
+}
+
+[data-hve-locked][data-hve-hovered] {
+  outline-color: #b3ada2 !important;
+  cursor: not-allowed !important;
+}
+
+[data-hve-format-brush-active] * {
+  cursor: copy !important;
+}
+
+/* ---------- Control bar ---------- */
+
+.hve-controlbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  background: rgba(250, 249, 245, 0.92);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid #e6dfd8;
+  z-index: 2147483640;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+html.hve-on body {
+  padding-top: 52px !important;
+}
+
+.hve-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 10px;
+  cursor: default;
+}
+
+.hve-logo-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #cc785c, #a9583e);
+  color: #fff;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(204, 120, 92, 0.35);
+}
+
+.hve-logo-text {
+  font-size: 14px;
+  font-weight: 700;
+  color: #141413;
+  white-space: nowrap;
+}
+
+.hve-logo-text small {
+  display: block;
+  font-size: 10px;
+  font-weight: 500;
+  color: #8e8b82;
+  letter-spacing: 0.3px;
+}
+
+.hve-cb-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 14px;
+  border: 1px solid #e6dfd8;
+  border-radius: 9px;
+  background: #faf9f5;
+  color: #3d3d3a;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.hve-cb-btn:hover {
+  background: #f5f0e8;
+  border-color: #d8cec2;
+  color: #141413;
+}
+
+.hve-cb-btn:active {
+  transform: scale(0.97);
+}
+
+.hve-cb-btn.active {
+  background: #cc785c;
+  border-color: #cc785c;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(204, 120, 92, 0.35);
+}
+
+.hve-cb-btn.active:hover {
+  background: #a9583e;
+  border-color: #a9583e;
+}
+
+.hve-cb-spacer {
+  flex: 1;
+}
+
+.hve-cb-filename {
+  font-size: 12px;
+  color: #8e8b82;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- Toolbar ---------- */
+
+.hve-toolbar {
+  position: fixed;
+  top: 58px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 10px;
+  background: rgba(250, 249, 245, 0.96);
+  backdrop-filter: blur(10px);
+  border: 1px solid #e6dfd8;
+  border-radius: 14px;
+  box-shadow: 0 4px 24px rgba(20, 20, 19, 0.12), 0 1px 4px rgba(20, 20, 19, 0.08);
+  z-index: 2147483638;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  user-select: none;
+  max-width: calc(100vw - 16px);
+  overflow-x: auto;
+  overflow-y: visible;
+  scrollbar-width: thin;
+  box-sizing: border-box;
+  display: none;
+}
+
+html.hve-on .hve-toolbar {
+  display: flex;
+}
+
+.hve-tb-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.hve-tb-sep {
+  width: 1px;
+  height: 22px;
+  background: #e6dfd8;
+  margin: 0 5px;
+  flex-shrink: 0;
+}
+
+.hve-toolbar button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 5px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: inherit;
+  color: #3d3d3a;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.hve-toolbar button:hover:not(:disabled) {
+  background: #f5f0e8;
+  color: #141413;
+}
+
+.hve-toolbar button:active:not(:disabled) {
+  background: #e6dfd8;
+  transform: scale(0.93);
+}
+
+.hve-toolbar button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.hve-toolbar button.hve-active {
+  background: #cc785c;
+  color: #fff;
+}
+
+.hve-toolbar button.hve-active:hover {
+  background: #a9583e;
+}
+
+.hve-toolbar button.hve-brush-active {
+  background: #3aa08b;
+  color: #fff;
+}
+
+.hve-toolbar .hve-tb-bold { font-weight: 800; }
+.hve-toolbar .hve-tb-italic { font-style: italic; font-family: Georgia, serif; }
+.hve-toolbar .hve-tb-underline { text-decoration: underline; }
+.hve-toolbar .hve-tb-strike { text-decoration: line-through; }
+
+.hve-tb-select {
+  height: 30px;
+  border: 1px solid #e6dfd8;
+  border-radius: 8px;
+  background: #faf9f5;
+  color: #3d3d3a;
+  font-size: 12px;
+  font-family: inherit;
+  padding: 0 4px;
+  cursor: pointer;
+  max-width: 110px;
+  flex-shrink: 0;
+}
+
+.hve-tb-select:hover:not(:disabled) {
+  border-color: #cc785c;
+}
+
+.hve-tb-select:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.hve-color-btn {
+  position: relative;
+}
+
+.hve-color-swatch {
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 14px;
+  height: 3px;
+  border-radius: 2px;
+  background: #cc785c;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+/* ---------- Dropdown menu ---------- */
+
+.hve-dropdown {
+  position: fixed;
+  background: #faf9f5;
+  border: 1px solid #e6dfd8;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(20, 20, 19, 0.15);
+  padding: 6px;
+  z-index: 2147483645;
+  min-width: 150px;
+  max-height: 340px;
+  overflow-y: auto;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  animation: hve-pop-in 0.14s ease;
+}
+
+.hve-dd-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #3d3d3a;
+  transition: background 0.12s;
+  white-space: nowrap;
+}
+
+.hve-dd-item:hover {
+  background: #f5f0e8;
+  color: #141413;
+}
+
+.hve-dd-item .hve-dd-icon {
+  width: 20px;
+  text-align: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.hve-dd-item .hve-dd-desc {
+  font-size: 11px;
+  color: #8e8b82;
+  margin-left: auto;
+  padding-left: 12px;
+}
+
+.hve-dd-divider {
+  height: 1px;
+  background: #e6dfd8;
+  margin: 4px 6px;
+}
+
+.hve-dd-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #3d3d3a;
+}
+
+.hve-dd-slider-row input[type="range"] {
+  width: 110px;
+  accent-color: #cc785c;
+}
+
+.hve-dd-slider-val {
+  min-width: 34px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: #6c6a64;
+  font-size: 11px;
+}
+
+/* ---------- Color panel ---------- */
+
+.hve-color-panel {
+  position: fixed;
+  background: #faf9f5;
+  border: 1px solid #e6dfd8;
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(20, 20, 19, 0.15);
+  padding: 12px;
+  z-index: 2147483646;
+  width: 248px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  animation: hve-pop-in 0.14s ease;
+}
+
+.hve-cp-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: #8e8b82;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.hve-cp-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.hve-cp-swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.hve-cp-swatch:hover {
+  transform: scale(1.25);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  z-index: 1;
+  position: relative;
+}
+
+.hve-cp-swatch.active {
+  outline: 2px solid #cc785c;
+  outline-offset: 2px;
+  transform: scale(1.12);
+}
+
+.hve-cp-custom {
+  border-top: 1px solid #e6dfd8;
+  padding-top: 9px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.hve-cp-native {
+  width: 34px;
+  height: 30px;
+  border: 1px solid #e6dfd8;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 2px;
+  background: #faf9f5;
+  flex-shrink: 0;
+}
+
+.hve-cp-native::-webkit-color-swatch-wrapper { padding: 0; }
+.hve-cp-native::-webkit-color-swatch { border: none; border-radius: 5px; }
+
+.hve-cp-hex {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid #e6dfd8;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  color: #141413;
+  background: #faf9f5;
+  text-transform: uppercase;
+  min-width: 0;
+}
+
+.hve-cp-hex:focus {
+  outline: none;
+  border-color: #cc785c;
+  box-shadow: 0 0 0 3px rgba(204, 120, 92, 0.12);
+}
+
+/* ---------- Insert panel ---------- */
+
+.hve-insert-panel {
+  position: fixed;
+  z-index: 2147483646;
+  background: #faf9f5;
+  border: 1px solid #e6dfd8;
+  border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(20, 20, 19, 0.18), 0 2px 8px rgba(20, 20, 19, 0.08);
+  padding: 8px;
+  min-width: 250px;
+  max-width: 300px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  animation: hve-pop-in 0.16s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hve-ip-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: #8e8b82;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 8px 12px 6px;
+}
+
+.hve-ip-mode {
+  display: flex;
+  gap: 4px;
+  padding: 6px 8px;
+  background: #f5f0e8;
+  border-radius: 10px;
+  margin: 2px 8px 8px;
+}
+
+.hve-ip-mode-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: inherit;
+  color: #6c6a64;
+  transition: all 0.15s;
+}
+
+.hve-ip-mode-btn:hover {
+  color: #3d3d3a;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.hve-ip-mode-btn.active {
+  background: #faf9f5;
+  color: #cc785c;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(20, 20, 19, 0.1);
+}
+
+.hve-ip-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.hve-ip-item:hover {
+  background: #f5f0e8;
+}
+
+.hve-ip-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  background: #f5f0e8;
+  color: #cc785c;
+  flex-shrink: 0;
+}
+
+.hve-ip-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.hve-ip-text b {
+  font-size: 13px;
+  font-weight: 500;
+  color: #141413;
+}
+
+.hve-ip-text span {
+  font-size: 11px;
+  color: #8e8b82;
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- Context menu ---------- */
+
+.hve-context-menu {
+  position: fixed;
+  z-index: 2147483647;
+  background: #faf9f5;
+  border: 1px solid #e6dfd8;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(20, 20, 19, 0.16);
+  padding: 6px;
+  min-width: 200px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  animation: hve-pop-in 0.13s ease;
+}
+
+.hve-cm-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #3d3d3a;
+  transition: background 0.12s;
+  white-space: nowrap;
+}
+
+.hve-cm-item:hover {
+  background: #f5f0e8;
+  color: #141413;
+}
+
+.hve-cm-item.danger {
+  color: #ef4444;
+}
+
+.hve-cm-item.danger:hover {
+  background: #fef2f2;
+}
+
+.hve-cm-item.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.hve-cm-icon {
+  width: 18px;
+  text-align: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.hve-cm-shortcut {
+  margin-left: auto;
+  font-size: 11px;
+  color: #b3ada2;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  padding-left: 16px;
+}
+
+.hve-cm-divider {
+  height: 1px;
+  background: #e6dfd8;
+  margin: 4px 6px;
+}
+
+/* ---------- Dialog ---------- */
+
+.hve-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 20, 19, 0.4);
+  backdrop-filter: blur(3px);
+  z-index: 2147483648;
+  animation: hve-fade-in 0.18s ease;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 14vh;
+}
+
+.hve-dialog {
+  background: #faf9f5;
+  border: 1px solid #e6dfd8;
+  border-radius: 16px;
+  box-shadow: 0 16px 48px rgba(20, 20, 19, 0.22);
+  padding: 26px;
+  min-width: 330px;
+  max-width: 92vw;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  animation: hve-dialog-in 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hve-dialog h3 {
+  font-size: 17px;
+  font-weight: 600;
+  color: #141413;
+  margin: 0 0 18px;
+}
+
+.hve-dialog label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6c6a64;
+  margin-bottom: 6px;
+}
+
+.hve-dialog input[type="number"],
+.hve-dialog input[type="text"],
+.hve-dialog select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid #e6dfd8;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  background: #fff;
+  color: #141413;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+  margin-bottom: 14px;
+}
+
+.hve-dialog input:focus,
+.hve-dialog select:focus {
+  outline: none;
+  border-color: #cc785c;
+  box-shadow: 0 0 0 3px rgba(204, 120, 92, 0.12);
+}
+
+.hve-dialog .hve-dialog-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.hve-btn-cancel {
+  padding: 9px 18px;
+  border: 1px solid #e6dfd8;
+  border-radius: 10px;
+  background: #faf9f5;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: #3d3d3a;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+
+.hve-btn-cancel:hover {
+  background: #f5f0e8;
+}
+
+.hve-btn-confirm {
+  padding: 9px 18px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #cc785c, #a9583e);
+  color: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  box-shadow: 0 2px 8px rgba(204, 120, 92, 0.3);
+  transition: all 0.15s;
+}
+
+.hve-btn-confirm:hover {
+  background: #a9583e;
+  box-shadow: 0 4px 12px rgba(204, 120, 92, 0.4);
+}
+
+.hve-dialog .hve-check-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  color: #3d3d3a;
+  cursor: pointer;
+}
+
+.hve-dialog .hve-check-row input {
+  width: auto;
+  margin: 0;
+  accent-color: #cc785c;
+}
+
+/* ---------- Toasts ---------- */
+
+.hve-toast-wrap {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2147483647;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.hve-toast {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: #faf9f5;
+  border: 1px solid #e6dfd8;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #3d3d3a;
+  box-shadow: 0 4px 20px rgba(20, 20, 19, 0.15);
+  animation: hve-toast-in 0.2s ease;
+  max-width: 80vw;
+}
+
+.hve-toast .hve-toast-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.hve-toast.success .hve-toast-dot { background: #10b981; }
+.hve-toast.error .hve-toast-dot { background: #ef4444; }
+.hve-toast.info .hve-toast-dot { background: #cc785c; }
+
+.hve-toast.hve-toast-out {
+  animation: hve-toast-out 0.25s ease forwards;
+}
+
+/* ---------- Status pill ---------- */
+
+.hve-status {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 2147483646;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: linear-gradient(135deg, #cc785c, #a9583e);
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  font: 500 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  box-shadow: 0 4px 16px rgba(204, 120, 92, 0.35);
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.hve-status:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(204, 120, 92, 0.45);
+}
+
+.hve-status .hve-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  animation: hve-pulse 2s ease infinite;
+}
+
+html:not(.hve-on) .hve-status .hve-status-dot {
+  background: #8e8b82;
+  animation: none;
+}
+
+/* ---------- Multi-select toast ---------- */
+
+.hve-multi-toast {
+  position: fixed;
+  bottom: 68px;
+  right: 20px;
+  z-index: 2147483645;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  background: #faf9f5;
+  border: 1px solid #e6dfd8;
+  border-radius: 14px;
+  font: 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #3d3d3a;
+  box-shadow: 0 4px 16px rgba(20, 20, 19, 0.12);
+  user-select: none;
+  animation: hve-pop-in 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hve-multi-toast .hve-multi-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hve-multi-toast .hve-multi-dot {
+  width: 8px;
+  height: 8px;
+  background: #cc785c;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.hve-multi-toast b {
+  color: #cc785c;
+  font-weight: 700;
+}
+
+.hve-multi-toast .hve-multi-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 0;
+}
+
+.hve-multi-toast .hve-multi-actions button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid #e6dfd8;
+  border-radius: 7px;
+  background: #faf9f5;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: inherit;
+  color: #3d3d3a;
+  transition: all 0.12s ease;
+}
+
+.hve-multi-toast .hve-multi-actions button:hover {
+  background: #f5f0e8;
+  border-color: #cc785c;
+  color: #141413;
+}
+
+.hve-multi-toast .hve-multi-actions button.danger:hover {
+  background: #fef2f2;
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.hve-multi-toast .hve-multi-hint {
+  color: #8e8b82;
+  font-size: 11px;
+}
+
+/* ---------- Resize handles ---------- */
+
+.hve-resize-box {
+  position: fixed;
+  pointer-events: none;
+  z-index: 2147483639;
+}
+
+.hve-rz-handle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  border: 2px solid #cc785c;
+  border-radius: 3px;
+  pointer-events: all;
+  box-sizing: border-box;
+  transition: transform 0.1s;
+}
+
+.hve-rz-handle:hover {
+  transform: scale(1.3);
+  background: #cc785c;
+}
+
+.hve-rz-nw { left: -6px; top: -6px; cursor: nwse-resize; }
+.hve-rz-n  { left: 50%; margin-left: -6px; top: -6px; cursor: ns-resize; }
+.hve-rz-ne { right: -6px; top: -6px; cursor: nesw-resize; }
+.hve-rz-e  { right: -6px; top: 50%; margin-top: -6px; cursor: ew-resize; }
+.hve-rz-se { right: -6px; bottom: -6px; cursor: nwse-resize; }
+.hve-rz-s  { left: 50%; margin-left: -6px; bottom: -6px; cursor: ns-resize; }
+.hve-rz-sw { left: -6px; bottom: -6px; cursor: nesw-resize; }
+.hve-rz-w  { left: -6px; top: 50%; margin-top: -6px; cursor: ew-resize; }
+
+.hve-size-label {
+  position: fixed;
+  background: #141413;
+  color: #fff;
+  font: 11px/1 ui-monospace, "SF Mono", Menlo, monospace;
+  padding: 3px 8px;
+  border-radius: 5px;
+  pointer-events: none;
+  z-index: 2147483647;
+}
+
+/* ---------- Drag ghost & insert indicator ---------- */
+
+.hve-drag-ghost {
+  position: fixed;
+  z-index: 2147483643;
+  pointer-events: none;
+  opacity: 0.85;
+  box-shadow: 0 8px 32px rgba(20, 20, 19, 0.2), 0 2px 8px rgba(204, 120, 92, 0.15);
+  outline: 2px dashed #a9583e;
+  overflow: hidden;
+}
+
+.hve-insert-indicator {
+  position: fixed;
+  height: 4px;
+  background: #cc785c;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 2147483641;
+  animation: hve-indicator-pulse 1.2s ease infinite;
+}
+
+.hve-insert-indicator.hve-insert-vertical {
+  width: 4px;
+  height: auto;
+}
+
+@keyframes hve-indicator-pulse {
+  0%, 100% { opacity: 0.65; }
+  50% { opacity: 1; }
+}
+
+/* ---------- Alignment guides ---------- */
+
+.hve-guide {
+  position: fixed;
+  background: #e14b8f;
+  pointer-events: none;
+  z-index: 2147483642;
+}
+
+.hve-guide.hve-guide-v {
+  width: 1.5px;
+  margin-left: -0.75px;
+}
+
+.hve-guide.hve-guide-h {
+  height: 1.5px;
+  margin-top: -0.75px;
+}
+
+.hve-guide-label {
+  position: fixed;
+  background: #e14b8f;
+  color: #fff;
+  font: 11px/1 ui-monospace, "SF Mono", Menlo, monospace;
+  padding: 3px 8px;
+  border-radius: 5px;
+  pointer-events: none;
+  z-index: 2147483643;
+  white-space: nowrap;
+}
+
+/* ---------- Marquee ---------- */
+
+.hve-marquee {
+  position: fixed;
+  border: 1.5px dashed #cc785c;
+  background: rgba(204, 120, 92, 0.08);
+  pointer-events: none;
+  z-index: 2147483641;
+}
+
+/* ---------- Quick add ---------- */
+
+.hve-quick-add {
+  position: fixed;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #cc785c, #a9583e);
+  color: #fff;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 2147483644;
+  box-shadow: 0 4px 16px rgba(204, 120, 92, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: hve-pop-in 0.15s ease;
+}
+
+.hve-quick-add:hover {
+  transform: scale(1.1);
+}
+
+/* ---------- Side panels (page sorter / chart / pdf) ---------- */
+
+.hve-side-panel {
+  position: fixed;
+  top: 108px;
+  right: 16px;
+  width: 280px;
+  max-height: calc(100vh - 140px);
+  background: #faf9f5;
+  border: 1px solid #e6dfd8;
+  border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(20, 20, 19, 0.18), 0 2px 8px rgba(20, 20, 19, 0.08);
+  z-index: 2147483644;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: hve-pop-in 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hve-sp-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 15px;
+  border-bottom: 1px solid #e6dfd8;
+  background: #f5f0e8;
+  flex-shrink: 0;
+}
+
+.hve-sp-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #141413;
+}
+
+.hve-sp-count {
+  font-size: 11px;
+  color: #cc785c;
+  background: #efe9de;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.hve-sp-close {
+  margin-left: auto;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #8e8b82;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.hve-sp-close:hover {
+  background: #e6dfd8;
+  color: #141413;
+}
+
+.hve-sp-body {
+  overflow-y: auto;
+  padding: 10px;
+  flex: 1;
+}
+
+/* page sorter items */
+
+.hve-ps-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 2px solid transparent;
+  margin-bottom: 4px;
+}
+
+.hve-ps-item:hover {
+  background: #f5f0e8;
+}
+
+.hve-ps-item.active {
+  border-color: #cc785c;
+  background: #efe9de;
+}
+
+.hve-ps-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: #cc785c;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.hve-ps-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: #141413;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.hve-ps-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.hve-ps-btn {
+  width: 26px;
+  height: 26px;
+  border: 1px solid #e6dfd8;
+  border-radius: 6px;
+  background: #faf9f5;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  padding: 0;
+  color: #3d3d3a;
+}
+
+.hve-ps-btn:hover:not(:disabled) {
+  background: #f5f0e8;
+  border-color: #cc785c;
+}
+
+.hve-ps-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.hve-ps-empty {
+  padding: 24px 12px;
+  text-align: center;
+  font-size: 12px;
+  color: #8e8b82;
+}
+
+/* chart typography */
+
+.hve-chart-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: #8e8b82;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 10px 4px 8px;
+}
+
+.hve-chart-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.hve-chart-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 4px;
+  border: 1px solid #e6dfd8;
+  border-radius: 10px;
+  background: #faf9f5;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.hve-chart-tile:hover {
+  background: #efe9de;
+  border-color: #cc785c;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(204, 120, 92, 0.12);
+}
+
+.hve-chart-tile .hve-ct-icon {
+  font-size: 17px;
+  line-height: 1;
+}
+
+.hve-chart-tile .hve-ct-name {
+  font-size: 10px;
+  color: #3d3d3a;
+  font-weight: 500;
+}
+
+.hve-chart-ctrl {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 4px;
+  font-size: 12px;
+  color: #3d3d3a;
+}
+
+.hve-chart-ctrl label {
+  min-width: 68px;
+  font-size: 11px;
+  color: #6c6a64;
+  font-weight: 500;
+}
+
+.hve-chart-ctrl input[type="range"] {
+  flex: 1;
+  accent-color: #cc785c;
+  min-width: 0;
+}
+
+.hve-chart-ctrl select {
+  flex: 1;
+  padding: 4px 6px;
+  border: 1px solid #e6dfd8;
+  border-radius: 6px;
+  font-size: 11px;
+  color: #141413;
+  background: #faf9f5;
+  min-width: 0;
+}
+
+.hve-chart-ctrl .hve-ctrl-val {
+  min-width: 34px;
+  text-align: right;
+  font-size: 10px;
+  color: #8e8b82;
+  font-variant-numeric: tabular-nums;
+}
+
+.hve-chart-align-row {
+  display: flex;
+  gap: 4px;
+  padding: 5px 4px;
+}
+
+.hve-chart-align-row button {
+  flex: 1;
+  height: 26px;
+  border: 1px solid #e6dfd8;
+  border-radius: 6px;
+  background: #faf9f5;
+  cursor: pointer;
+  font-size: 12px;
+  color: #3d3d3a;
+  transition: all 0.12s;
+}
+
+.hve-chart-align-row button:hover {
+  border-color: #cc785c;
+}
+
+.hve-chart-align-row button.active {
+  background: #efe9de;
+  border-color: #cc785c;
+  color: #cc785c;
+  font-weight: 600;
+}
+
+/* pdf panel */
+
+.hve-pdf-row {
+  margin-bottom: 10px;
+}
+
+.hve-pdf-row label {
+  display: block;
+  font-size: 11px;
+  color: #6c6a64;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.hve-pdf-row select,
+.hve-pdf-row input[type="number"] {
+  width: 100%;
+  padding: 5px 8px;
+  border: 1px solid #e6dfd8;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #141413;
+  background: #faf9f5;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.hve-pdf-row select:focus,
+.hve-pdf-row input:focus {
+  border-color: #cc785c;
+}
+
+.hve-pdf-toggle {
+  display: flex;
+  gap: 4px;
+}
+
+.hve-pdf-toggle button {
+  flex: 1;
+  padding: 5px 10px;
+  border: 1px solid #e6dfd8;
+  border-radius: 8px;
+  background: #faf9f5;
+  font-size: 12px;
+  color: #6c6a64;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.hve-pdf-toggle button.active {
+  background: #efe9de;
+  color: #cc785c;
+  border-color: #cc785c;
+  font-weight: 500;
+}
+
+.hve-pdf-margins {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+.hve-pdf-margins input {
+  width: 100% !important;
+  text-align: center;
+  padding: 4px 2px !important;
+  font-size: 11px !important;
+}
+
+.hve-pdf-custom {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hve-pdf-custom input {
+  flex: 1;
+  padding: 5px 6px;
+  border: 1px solid #e6dfd8;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #141413;
+  background: #faf9f5;
+  outline: none;
+  box-sizing: border-box;
+  text-align: center;
+  min-width: 0;
+}
+
+.hve-pdf-custom span {
+  font-size: 12px;
+  color: #6c6a64;
+  flex-shrink: 0;
+}
+
+.hve-pdf-divider {
+  height: 1px;
+  background: #e6dfd8;
+  margin: 10px 0;
+}
+
+.hve-pdf-info {
+  font-size: 12px;
+  color: #cc785c;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.hve-pdf-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hve-pdf-btn-primary {
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #cc785c, #a9583e);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.hve-pdf-btn-primary:hover {
+  box-shadow: 0 2px 12px rgba(204, 120, 92, 0.3);
+  transform: translateY(-1px);
+}
+
+.hve-pdf-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: wait;
+  transform: none;
+}
+
+.hve-pdf-btn {
+  width: 100%;
+  padding: 6px 12px;
+  border: 1px solid #e6dfd8;
+  border-radius: 10px;
+  background: #faf9f5;
+  color: #3d3d3a;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.hve-pdf-btn:hover {
+  background: #f5f0e8;
+  border-color: #cc785c;
+}
+
+/* pdf break preview overlay */
+
+.hve-pdf-breakline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+  border-top: 2px dashed #cc785c;
+  pointer-events: none;
+}
+
+.hve-pdf-breakline .hve-pb-label {
+  position: absolute;
+  left: 12px;
+  top: -20px;
+  font: 10px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #fff;
+  background: #cc785c;
+  padding: 3px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+/* ---------- External image drop overlay ---------- */
+
+.hve-drop-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483645;
+  background: rgba(204, 120, 92, 0.06);
+  border: 3px dashed #cc785c;
+  pointer-events: none;
+  animation: hve-fade-in 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hve-drop-overlay .hve-drop-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 30px 46px;
+  background: rgba(250, 249, 245, 0.95);
+  border: 2px solid #cc785c;
+  border-radius: 20px;
+  box-shadow: 0 8px 40px rgba(204, 120, 92, 0.2);
+  font: 600 16px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #cc785c;
+}
+
+/* ---------- Animations ---------- */
+
+@keyframes hve-pop-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes hve-dialog-in {
+  from { opacity: 0; transform: translateY(-8px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes hve-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes hve-toast-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes hve-toast-out {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(8px); }
+}
+
+@keyframes hve-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+/* ---------- Misc ---------- */
+
+.hve-ui-root {
+  /* container for every editor-owned DOM node */
+}
+
+.hve-ui-root ::-webkit-scrollbar,
+.hve-dropdown::-webkit-scrollbar,
+.hve-sp-body::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.hve-dropdown::-webkit-scrollbar-thumb,
+.hve-sp-body::-webkit-scrollbar-thumb {
+  background: #d8cec2;
+  border-radius: 4px;
+}
+
+/* Print: hide editor chrome */
+@media print {
+  .hve-ui-root,
+  .hve-controlbar { display: none !important; }
+  html.hve-on body { padding-top: 0 !important; }
+}
+
+/* locked selection: hide resize handles, show badge instead */
+.hve-resize-box.hve-locked-box .hve-rz-handle { display: none; }
+.hve-resize-box.hve-locked-box::before {
+  content: '🔒 locked';
+  position: absolute;
+  top: -26px; left: 50%; transform: translateX(-50%);
+  background: #3d3d3a; color: #fff;
+  font: 600 11px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  padding: 3px 10px; border-radius: 999px; white-space: nowrap;
+}
