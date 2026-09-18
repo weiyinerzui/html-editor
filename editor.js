@@ -258,6 +258,11 @@
     // Self-contained bilingual demo-document strings: key -> [English, Chinese].
   // Language switching only replaces content that still matches one of the two
   // pristine values, so user-edited text is never clobbered by a switch.
+    // Self-contained bilingual demo-document strings: key -> [English, Chinese].
+  // Language switching only replaces content that still matches one of the two
+  // pristine values, so user-edited text is never clobbered by a switch.
+  // English values are the browser-normalized runtime innerHTML — they must
+  // match exactly what the DOM reports for the pristine page.
   const DOC_I18N = {
     "doc.title": ["Free Online HTML Editor — WYSIWYG Visual Web Page Editor", "免费在线 HTML 编辑器 — 可视化所见即所得网页编辑器"],
     "doc.desc": ["A free, open, in-browser WYSIWYG HTML editor. Click to select, drag to move, double-click to edit text, insert tables & images, export clean HTML or PDF. No sign-up, works offline.", "免费开源的浏览器内可视化 HTML 编辑器。点击选中、拖拽移动、双击编辑文字，插入表格与图片，导出干净的 HTML 或 PDF。无需注册，可离线使用。"],
@@ -285,12 +290,12 @@
     "feat.6h": ["📄 PDF export", "📄 PDF 导出"],
     "feat.6p": ["Paginate with a live page-break preview and export to PDF with configurable size, margins and scale.", "实时分页预览，可配置纸张、边距与缩放，一键导出 PDF。"],
     "use.title": ["What people build with it", "大家用它做什么"],
-    "use.c1": ["<strong>Landing pages</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">Design and export in minutes.", "<strong>落地页</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">几分钟内设计并导出。</span>"],
-    "use.c2": ["<strong>Email templates</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">Table-based layouts made visual.", "<strong>邮件模板</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">表格布局也能可视化编辑。</span>"],
-    "use.c3": ["<strong>Mockups</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">Prototype without a design tool.", "<strong>原型图</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">无需设计工具即可出原型。</span>"],
-    "use.c4": ["<strong>PDF documents</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">Paginated reports and one-pagers.", "<strong>PDF 文档</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">分页报告与一页纸方案。</span>"],
-    "use.c5": ["<strong>Blog posts</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">Rich writing with tables &amp; media.", "<strong>博客文章</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">图文表格的富文本写作。</span>"],
-    "use.c6": ["<strong>Charts &amp; dashboards</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">KPI cards &amp; legends from templates.", "<strong>图表看板</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">模板生成 KPI 卡片与图例。</span>"],
+    "use.c1": ["<strong>Landing pages</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">Design and export in minutes.</span>", "<strong>落地页</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">几分钟内设计并导出。</span>"],
+    "use.c2": ["<strong>Email templates</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">Table-based layouts made visual.</span>", "<strong>邮件模板</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">表格布局也能可视化编辑。</span>"],
+    "use.c3": ["<strong>Mockups</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">Prototype without a design tool.</span>", "<strong>原型图</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">无需设计工具即可出原型。</span>"],
+    "use.c4": ["<strong>PDF documents</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">Paginated reports and one-pagers.</span>", "<strong>PDF 文档</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">分页报告与一页纸方案。</span>"],
+    "use.c5": ["<strong>Blog posts</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">Rich writing with tables &amp; media.</span>", "<strong>博客文章</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">图文表格的富文本写作。</span>"],
+    "use.c6": ["<strong>Charts &amp; dashboards</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">KPI cards &amp; legends from templates.</span>", "<strong>图表看板</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">模板生成 KPI 卡片与图例。</span>"],
     "sc.title": ["Keyboard shortcuts", "键盘快捷键"],
     "sc.thA": ["Action", "操作"],
     "sc.thS": ["Shortcut", "快捷键"],

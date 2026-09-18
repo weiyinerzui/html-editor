@@ -39,6 +39,22 @@ const browser = await chromium.launch();
   check('default: lang toggle offers EN', state.langBtn === 'EN');
   check('default: font select shows 默认', state.fontFirstOpt === '默认');
 
+  // every data-i18n node must actually be translated (no Latin-only leftovers)
+  const untranslated = await page.evaluate(() => {
+    const bad = [];
+    document.querySelectorAll('[data-i18n]').forEach(n => {
+      const txt = n.textContent.trim();
+      if (!/[\u4e00-\u9fff]/.test(txt) && /[A-Za-z]{3}/.test(txt)) bad.push(n.getAttribute('data-i18n'));
+    });
+    return bad;
+  });
+  check('default: every data-i18n node is Chinese', untranslated.length === 0);
+  if (untranslated.length) console.log('   untranslated:', untranslated.join(', '));
+  const useCards = await page.evaluate(() =>
+    Array.from(document.querySelectorAll('[data-i18n^="use.c"]')).map(n => n.querySelector('strong').textContent));
+  check('default: use-case cards translated', useCards.length === 6 &&
+    useCards[0] === '落地页' && useCards[3] === 'PDF 文档' && useCards[5] === '图表看板');
+
   /* ---- B. Switch to English ---- */
   await page.click('#hve-cb-lang');
   await page.waitForTimeout(250);
@@ -220,6 +236,10 @@ const browser = await chromium.launch();
   // untouched nodes still translate both ways after the edit
   check('other nodes still translate (EN)', await page.evaluate(() =>
     document.querySelector('main h2').textContent === '五步上手'));
+  // use-case cards too (regression: truncated English source values used to
+  // break the pristine-match check and skip these nodes)
+  check('use-case cards still translate after edit', await page.evaluate(() =>
+    document.querySelector('[data-i18n="use.c1"]').textContent.includes('落地页')));
 
   // undo the manual edit -> restores the pristine Chinese heading
   await page.evaluate(() => window.scrollTo(0, 0));
