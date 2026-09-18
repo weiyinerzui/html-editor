@@ -255,57 +255,78 @@
   };
 
   // Landing-page (demo document) strings. Keys live in data-i18n attributes.
-  const DOC_ZH = {
-    'doc.title': '免费在线 HTML 编辑器 — 可视化所见即所得网页编辑器',
-    'doc.desc': '免费开源的浏览器内可视化 HTML 编辑器。点击选中、拖拽移动、双击编辑文字，插入表格与图片，导出干净的 HTML 或 PDF。无需注册，可离线使用。',
-    'hero.title': '免费在线可视化 HTML 编辑器',
-    'hero.sub': '在浏览器里<strong>所见即所得</strong>地编辑任何网页 —— 点击选中、拖拽移动、双击改写文字。无需代码、无需注册、无需上传：一切都在本地完成。',
-    'cta.btn': '✏️ 立即编辑这个页面',
-    'cta.hint': '…或点击顶栏的<b>编辑</b>按钮',
-    'quick.title': '五步上手',
-    'quick.s1': '<strong>选中</strong> —— 点击页面上的任意元素即可选中。',
-    'quick.s2': '<strong>移动</strong> —— 拖到任何位置；洋红色参考线帮你对齐。',
-    'quick.s3': '<strong>编辑</strong> —— 双击文字即可原地修改。',
-    'quick.s4': '<strong>插入</strong> —— 用工具栏的 <b>＋</b> 按钮或右键菜单插入表格、图片、按钮……',
-    'quick.s5': '<strong>保存</strong> —— 按 <kbd style="background:#f5f0e8;padding:2px 6px;border-radius:4px;font-size:.9em;">Ctrl+S</kbd> 下载干净的 HTML 文件。',
-    'feat.title': '功能一应俱全',
-    'feat.1h': '🖱 可视化拖拽', 'feat.1p': '智能对齐参考线与间距标签，随心重排任何元素；方向键可像素级微调。',
-    'feat.2h': '✏️ 行内富文本', 'feat.2p': '双击即可书写。悬浮工具栏提供加粗、斜体、标题、13 种字体、字号、颜色、对齐与效果。',
-    'feat.3h': '▦ 表格与图片', 'feat.3p': '插入表格并支持行/列操作；从桌面拖入图片，或直接从剪贴板粘贴。',
-    'feat.4h': '⌨️ 完整快捷键', 'feat.4p': '撤销/重做（100 步）、复制、样式复制粘贴、编组、锁定、图层 —— 全键盘操作。',
-    'feat.5h': '📦 多选与编组', 'feat.5p': 'Ctrl+点击或框选多个元素，编组后作为整体移动。',
-    'feat.6h': '📄 PDF 导出', 'feat.6p': '实时分页预览，可配置纸张、边距与缩放，一键导出 PDF。',
-    'use.title': '大家用它做什么',
-    'use.c1': '<strong>落地页</strong><br><span style="font-size: .9em; color: #3d3d3a;">几分钟内设计并导出。</span>',
-    'use.c2': '<strong>邮件模板</strong><br><span style="font-size: .9em; color: #3d3d3a;">表格布局也能可视化编辑。</span>',
-    'use.c3': '<strong>原型图</strong><br><span style="font-size: .9em; color: #3d3d3a;">无需设计工具即可出原型。</span>',
-    'use.c4': '<strong>PDF 文档</strong><br><span style="font-size: .9em; color: #3d3d3a;">分页报告与一页纸方案。</span>',
-    'use.c5': '<strong>博客文章</strong><br><span style="font-size: .9em; color: #3d3d3a;">图文表格的富文本写作。</span>',
-    'use.c6': '<strong>图表看板</strong><br><span style="font-size: .9em; color: #3d3d3a;">模板生成 KPI 卡片与图例。</span>',
-    'sc.title': '键盘快捷键', 'sc.thA': '操作', 'sc.thS': '快捷键',
-    'sc.save': '保存', 'sc.undo': '撤销 / 重做', 'sc.dup': '复制元素',
-    'sc.group': '编组 / 解组', 'sc.lock': '锁定 / 解锁',
-    'sc.style': '复制 / 粘贴样式', 'sc.del': '删除',
-    'sc.parent': '选中父级 / 取消选中', 'sc.nudge': '微调 1px / 10px',
-    'faq.title': '常见问题',
-    'faq.1q': '需要懂 HTML 或 CSS 吗？', 'faq.1a': '不需要 —— 所有操作都是点击与拖拽。如果你懂 HTML，则会欣赏导出文件的干净与语义化。',
-    'faq.2q': '真的免费吗？需要注册吗？', 'faq.2a': '真免费 —— 无账号、无试用、无付费墙。这是一个纯 HTML/JS 应用，甚至可以直接从本地文件运行。',
-    'faq.3q': '我的内容会上传到哪里？', 'faq.3a': '哪儿都不去。所有编辑都发生在这个浏览器标签页里，不上传任何数据。「保存」会把干净的 HTML 文件写到你的电脑上。',
-    'faq.4q': '能编辑已有的网页吗？', 'faq.4a': '可以 —— 点击<b>打开</b>（或 Ctrl+O），选择任意本地 .html 文件，即可可视化编辑。',
-    'faq.5q': '离线能用吗？', 'faq.5a': '页面加载完成后即可断网继续编辑。（仅一键导出 PDF 需联网加载渲染库 —— 打印导出离线可用。）',
-    'cmp.title': '为什么选择它？',
-    'cmp.v3': '本地', 'cmp.v4': '干净',
-    'cmp.l1': '永久免费', 'cmp.l2': '需要注册', 'cmp.l3': '数据不出浏览器', 'cmp.l4': '语义化输出',
-    'cta2.title': '现在就开始编辑',
-    'cta2.sub': '无需下载、无需信用卡。这个页面上的每个元素都是活的 —— 试着拖动这个横幅吧。',
-    'cta2.btn': '✏️ 进入编辑模式',
-    'f.p1': '一个从零实现、零依赖的浏览器可视化 HTML 编辑器。',
-    'f.p2': '所有编辑都在你的浏览器本地完成 —— 绝不上传任何数据。'
+    // Self-contained bilingual demo-document strings: key -> [English, Chinese].
+  // Language switching only replaces content that still matches one of the two
+  // pristine values, so user-edited text is never clobbered by a switch.
+  const DOC_I18N = {
+    "doc.title": ["Free Online HTML Editor — WYSIWYG Visual Web Page Editor", "免费在线 HTML 编辑器 — 可视化所见即所得网页编辑器"],
+    "doc.desc": ["A free, open, in-browser WYSIWYG HTML editor. Click to select, drag to move, double-click to edit text, insert tables & images, export clean HTML or PDF. No sign-up, works offline.", "免费开源的浏览器内可视化 HTML 编辑器。点击选中、拖拽移动、双击编辑文字，插入表格与图片，导出干净的 HTML 或 PDF。无需注册，可离线使用。"],
+    "hero.title": ["Free Online WYSIWYG HTML Editor", "免费在线可视化 HTML 编辑器"],
+    "hero.sub": ["Edit any web page <strong>visually, right in your browser</strong> — click to select, drag to move, double-click to rewrite text. No code, no sign-up, no upload: everything runs locally.", "在浏览器里<strong>所见即所得</strong>地编辑任何网页 —— 点击选中、拖拽移动、双击改写文字。无需代码、无需注册、无需上传：一切都在本地完成。"],
+    "cta.btn": ["✏️ Start editing this page", "✏️ 立即编辑这个页面"],
+    "cta.hint": ["…or click <b>Edit</b> in the top bar", "…或点击顶栏的<b>编辑</b>按钮"],
+    "quick.title": ["Get started in 5 steps", "五步上手"],
+    "quick.s1": ["<strong>Select</strong> — click any element on this page to select it.", "<strong>选中</strong> —— 点击页面上的任意元素即可选中。"],
+    "quick.s2": ["<strong>Move</strong> — drag it anywhere; magenta guides help you align.", "<strong>移动</strong> —— 拖到任何位置；洋红色参考线帮你对齐。"],
+    "quick.s3": ["<strong>Edit</strong> — double-click text to type inline.", "<strong>编辑</strong> —— 双击文字即可原地修改。"],
+    "quick.s4": ["<strong>Insert</strong> — use the <b>＋</b> toolbar button or right-click menu for tables, images, buttons…", "<strong>插入</strong> —— 用工具栏的 <b>＋</b> 按钮或右键菜单插入表格、图片、按钮……"],
+    "quick.s5": ["<strong>Save</strong> — press <kbd style=\"background:#f5f0e8;padding:2px 6px;border-radius:4px;font-size:.9em;\">Ctrl+S</kbd> to download the clean HTML file.", "<strong>保存</strong> —— 按 <kbd style=\"background:#f5f0e8;padding:2px 6px;border-radius:4px;font-size:.9em;\">Ctrl+S</kbd> 下载干净的 HTML 文件。"],
+    "feat.title": ["Everything you need", "功能一应俱全"],
+    "feat.1h": ["🖱 Visual drag &amp; drop", "🖱 可视化拖拽"],
+    "feat.1p": ["Reorder any element with smart alignment guides and distance labels. Arrow keys nudge by the pixel.", "智能对齐参考线与间距标签，随心重排任何元素；方向键可像素级微调。"],
+    "feat.2h": ["✏️ Inline rich text", "✏️ 行内富文本"],
+    "feat.2p": ["Double-click to write. Bold, italic, headings, 13 fonts, sizes, colors, alignment and effects from the floating toolbar.", "双击即可书写。悬浮工具栏提供加粗、斜体、标题、13 种字体、字号、颜色、对齐与效果。"],
+    "feat.3h": ["▦ Tables &amp; images", "▦ 表格与图片"],
+    "feat.3p": ["Insert tables with row/column operations, drop images from your desktop or paste them from the clipboard.", "插入表格并支持行/列操作；从桌面拖入图片，或直接从剪贴板粘贴。"],
+    "feat.4h": ["⌨️ Full shortcuts", "⌨️ 完整快捷键"],
+    "feat.4p": ["Undo/redo (100 steps), duplicate, copy/paste, group, lock, layers — all keyboard-driven.", "撤销/重做（100 步）、复制、样式复制粘贴、编组、锁定、图层 —— 全键盘操作。"],
+    "feat.5h": ["📦 Multi-select &amp; groups", "📦 多选与编组"],
+    "feat.5p": ["Ctrl+click or marquee-drag to select many elements, then group them and move everything as one.", "Ctrl+点击或框选多个元素，编组后作为整体移动。"],
+    "feat.6h": ["📄 PDF export", "📄 PDF 导出"],
+    "feat.6p": ["Paginate with a live page-break preview and export to PDF with configurable size, margins and scale.", "实时分页预览，可配置纸张、边距与缩放，一键导出 PDF。"],
+    "use.title": ["What people build with it", "大家用它做什么"],
+    "use.c1": ["<strong>Landing pages</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">Design and export in minutes.", "<strong>落地页</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">几分钟内设计并导出。</span>"],
+    "use.c2": ["<strong>Email templates</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">Table-based layouts made visual.", "<strong>邮件模板</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">表格布局也能可视化编辑。</span>"],
+    "use.c3": ["<strong>Mockups</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">Prototype without a design tool.", "<strong>原型图</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">无需设计工具即可出原型。</span>"],
+    "use.c4": ["<strong>PDF documents</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">Paginated reports and one-pagers.", "<strong>PDF 文档</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">分页报告与一页纸方案。</span>"],
+    "use.c5": ["<strong>Blog posts</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">Rich writing with tables &amp; media.", "<strong>博客文章</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">图文表格的富文本写作。</span>"],
+    "use.c6": ["<strong>Charts &amp; dashboards</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">KPI cards &amp; legends from templates.", "<strong>图表看板</strong><br><span style=\"font-size: .9em; color: #3d3d3a;\">模板生成 KPI 卡片与图例。</span>"],
+    "sc.title": ["Keyboard shortcuts", "键盘快捷键"],
+    "sc.thA": ["Action", "操作"],
+    "sc.thS": ["Shortcut", "快捷键"],
+    "sc.save": ["Save As", "保存"],
+    "sc.undo": ["Undo / Redo", "撤销 / 重做"],
+    "sc.dup": ["Duplicate", "复制元素"],
+    "sc.group": ["Group / Ungroup", "编组 / 解组"],
+    "sc.lock": ["Lock / Unlock", "锁定 / 解锁"],
+    "sc.style": ["Copy / Paste style", "复制 / 粘贴样式"],
+    "sc.del": ["Delete", "删除"],
+    "sc.parent": ["Select parent / Deselect", "选中父级 / 取消选中"],
+    "sc.nudge": ["Nudge 1px / 10px", "微调 1px / 10px"],
+    "faq.title": ["FAQ", "常见问题"],
+    "faq.1q": ["Do I need to know HTML or CSS?", "需要懂 HTML 或 CSS 吗？"],
+    "faq.1a": ["No — everything is point-and-click. If you do know HTML, you'll appreciate that the exported file stays clean and semantic.", "不需要 —— 所有操作都是点击与拖拽。如果你懂 HTML，则会欣赏导出文件的干净与语义化。"],
+    "faq.2q": ["Is it really free? Any sign-up?", "真的免费吗？需要注册吗？"],
+    "faq.2a": ["Yes and no — no accounts, no trials, no paywalls. It's a plain HTML/JS app you can even run from a local file.", "真免费 —— 无账号、无试用、无付费墙。这是一个纯 HTML/JS 应用，甚至可以直接从本地文件运行。"],
+    "faq.3q": ["Where does my content go?", "我的内容会上传到哪里？"],
+    "faq.3a": ["Nowhere. All editing happens in this browser tab; nothing is uploaded. Save As writes a clean HTML file to your computer.", "哪儿都不去。所有编辑都发生在这个浏览器标签页里，不上传任何数据。「保存」会把干净的 HTML 文件写到你的电脑上。"],
+    "faq.4q": ["Can I edit existing pages?", "能编辑已有的网页吗？"],
+    "faq.4a": ["Yes — click <b>Open</b> (or Ctrl+O), pick any local .html file, and edit it visually.", "可以 —— 点击<b>打开</b>（或 Ctrl+O），选择任意本地 .html 文件，即可可视化编辑。"],
+    "faq.5q": ["Does it work offline?", "离线能用吗？"],
+    "faq.5a": ["After the page loads, you can go offline and keep editing. (Only one-click PDF export needs the network for its rendering libraries — printing works offline.)", "页面加载完成后即可断网继续编辑。（仅一键导出 PDF 需联网加载渲染库 —— 打印导出离线可用。）"],
+    "cmp.title": ["Why this editor?", "为什么选择它？"],
+    "cmp.l1": ["Free forever", "永久免费"],
+    "cmp.l2": ["Accounts required", "需要注册"],
+    "cmp.v3": ["Local", "本地"],
+    "cmp.l3": ["Your data stays put", "数据不出浏览器"],
+    "cmp.v4": ["Clean", "干净"],
+    "cmp.l4": ["Semantic output", "语义化输出"],
+    "cta2.title": ["Start editing right now", "现在就开始编辑"],
+    "cta2.sub": ["No download, no credit card. Every element on this page is live — try moving this banner.", "无需下载、无需信用卡。这个页面上的每个元素都是活的 —— 试着拖动这个横幅吧。"],
+    "cta2.btn": ["✏️ Enter edit mode", "✏️ 进入编辑模式"],
+    "f.p1": ["A from-scratch, dependency-free recreation of the classic in-browser visual HTML editor.", "一个从零实现、零依赖的浏览器可视化 HTML 编辑器。"],
+    "f.p2": ["All editing happens locally in your browser — no data is ever uploaded.", "所有编辑都在你的浏览器本地完成 —— 绝不上传任何数据。"],
   };
-
-  const docOrig = new Map();   // element → original (English) innerHTML
-  let origTitle = '';
-  let origDesc = '';
 
   /** Translate a UI string (English key) into the active language. */
   function t(s, vars) {
@@ -318,26 +339,27 @@
   function applyHeadLang() {
     const zh = state.lang === 'zh';
     document.documentElement.lang = zh ? 'zh-CN' : 'en';
-    document.title = zh ? DOC_ZH['doc.title'] : origTitle;
+    const tt = DOC_I18N['doc.title'];
+    if (tt && (document.title === tt[0] || document.title === tt[1])) {
+      document.title = tt[zh ? 1 : 0];
+    }
+    const dd = DOC_I18N['doc.desc'];
     const md = document.querySelector('meta[name="description"]');
-    if (md) md.setAttribute('content', zh ? DOC_ZH['doc.desc'] : origDesc);
+    if (md && dd) {
+      const cur = md.getAttribute('content') || '';
+      if (cur === dd[0] || cur === dd[1]) md.setAttribute('content', dd[zh ? 1 : 0]);
+    }
   }
 
-  /** Translate every [data-i18n] element of the demo document. */
+  /** Translate every [data-i18n] element; user-modified text is preserved. */
   function applyDocumentLang() {
-    const els = document.querySelectorAll('[data-i18n]');
-    if (state.lang === 'zh') {
-      els.forEach(n => {
-        if (!docOrig.has(n)) docOrig.set(n, n.innerHTML);
-        const zh = DOC_ZH[n.getAttribute('data-i18n')];
-        if (zh != null) n.innerHTML = zh;
-      });
-    } else {
-      els.forEach(n => {
-        const orig = docOrig.get(n);
-        if (orig != null) n.innerHTML = orig;
-      });
-    }
+    const zh = state.lang === 'zh';
+    document.querySelectorAll('[data-i18n]').forEach(n => {
+      const pair = DOC_I18N[n.getAttribute('data-i18n')];
+      if (!pair) return;
+      const cur = n.innerHTML;
+      if (cur === pair[0] || cur === pair[1]) n.innerHTML = pair[zh ? 1 : 0];
+    });
   }
 
   /** Switch the whole interface + document language. */
@@ -3074,13 +3096,10 @@
       document.head.appendChild(copy);
     });
     const title = doc.querySelector('title');
-    if (title) { document.title = title.textContent; origTitle = title.textContent; }
-    const md = doc.querySelector('meta[name="description"]');
-    if (md) origDesc = md.getAttribute('content') || '';
+    if (title) document.title = title.textContent;
 
-    // a fresh document: reset translation cache, re-apply current language
-    docOrig.clear();
-    document.documentElement.lang = state.lang === 'zh' ? 'zh-CN' : 'en';
+    // a fresh document: re-apply the active language (pristine content only)
+    applyHeadLang();
     applyDocumentLang();
 
     state.fileName = name || '';
@@ -3269,9 +3288,6 @@
     buildUI();
 
     // language: default Chinese, remember the last choice
-    origTitle = document.title;
-    const md = document.querySelector('meta[name="description"]');
-    if (md) origDesc = md.getAttribute('content') || '';
     applyHeadLang();
     applyDocumentLang();
 

@@ -76,9 +76,10 @@ cd tests
 node test-editor.mjs   # 50 checks — core interactions (English UI)
 node test-editor2.mjs  # 17 checks — floating drag, snap guides, marquee,
                        # tables, format brush, layer ops, undo/redo
-node test-i18n.mjs     # 36 checks — bilingual UI, default Chinese, switching,
-                       # persistence, translated menus/dialogs/factories
+node test-i18n.mjs     # 45 checks — bilingual UI, default Chinese, switching,
+                       # persistence, translated menus/dialogs/factories,
+                       # user-edit preservation across switches & undo
 ```
 (Requires `playwright` installed in the working directory.)
 
-All **103/103** checks pass.
+All **112/112** checks pass.

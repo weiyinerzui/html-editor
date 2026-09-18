@@ -185,6 +185,73 @@ const browser = await chromium.launch();
   await page.close();
 }
 
+/* ---- G. User edits survive language switching ---- */
+{
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  const errors = [];
+  page.on('pageerror', e => errors.push('PAGEERROR: ' + e.message));
+  await page.goto(PAGE_URL);
+  await page.waitForTimeout(400);
+
+  // enter edit mode (zh default) and rewrite the hero heading by hand
+  await page.click('#hve-cb-edit');
+  await page.waitForTimeout(200);
+  const h1 = await page.$('main h1');
+  const bb = await h1.boundingBox();
+  await page.mouse.dblclick(bb.x + 60, bb.y + bb.height / 2);
+  await page.waitForTimeout(200);
+  await page.keyboard.press('Control+a');
+  await page.keyboard.type('我的自定义标题');
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(200);
+
+  // switch to English: the hand-written text must NOT be replaced
+  await page.click('#hve-cb-lang');
+  await page.waitForTimeout(250);
+  check('user edit preserved when switching to EN', await page.evaluate(() =>
+    document.querySelector('main h1').textContent === '我的自定义标题'));
+
+  // switch back to Chinese: still the user's text
+  await page.click('#hve-cb-lang');
+  await page.waitForTimeout(250);
+  check('user edit preserved when switching back to ZH', await page.evaluate(() =>
+    document.querySelector('main h1').textContent === '我的自定义标题'));
+
+  // untouched nodes still translate both ways after the edit
+  check('other nodes still translate (EN)', await page.evaluate(() =>
+    document.querySelector('main h2').textContent === '五步上手'));
+
+  // undo the manual edit -> restores the pristine Chinese heading
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.click('#hve-tb-undo');
+  await page.waitForTimeout(300);
+  check('undo restores pristine ZH heading', await page.evaluate(() =>
+    document.querySelector('main h1').textContent === '免费在线可视化 HTML 编辑器'));
+
+  // after undo rewrote body innerHTML, switching languages still works (key-based, not node-based)
+  await page.click('#hve-cb-lang');
+  await page.waitForTimeout(250);
+  check('translate after undo: heading -> EN', await page.evaluate(() =>
+    document.querySelector('main h1').textContent === 'Free Online WYSIWYG HTML Editor'));
+  check('translate after undo: h2 -> EN', await page.evaluate(() =>
+    document.querySelector('main h2').textContent === 'Get started in 5 steps'));
+  await page.click('#hve-cb-lang');
+  await page.waitForTimeout(250);
+  check('translate after undo: back to ZH', await page.evaluate(() =>
+    document.querySelector('main h1').textContent === '免费在线可视化 HTML 编辑器'));
+
+  // custom document title survives switching (only pristine titles are swapped)
+  await page.evaluate(() => { document.title = '我的自定义页面'; });
+  await page.click('#hve-cb-lang');
+  await page.waitForTimeout(250);
+  check('custom document title preserved', await page.evaluate(() =>
+    document.title === '我的自定义页面'));
+
+  check('no page errors (suite G)', errors.length === 0);
+  if (errors.length) console.log('   ', errors.join(' | '));
+  await page.close();
+}
+
 /* ---- F. English remembered from a previous session ---- */
 {
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
