@@ -100,11 +100,295 @@
     quickAddRef: null,
     dragging: null,
     resizing: null,
-    panels: { pages: false, chart: false, pdf: false }
+    panels: { pages: false, chart: false, pdf: false },
+    lang: (function () {
+      try { return localStorage.getItem('hve-lang') || 'zh'; } catch (err) { return 'zh'; }
+    })()
   };
 
   let uiRoot, controlBar, toolbar, toastWrap, statusBtn, resizeBox,
       multiToast, dragGhost, insertIndicator, marqueeEl, quickAddBtn, dropOverlay;
+
+  /* ---------------------------------------------------------
+   * 6.5 Internationalisation — UI strings + document strings.
+   * English is the source/key language; ZH is the default.
+   * ------------------------------------------------------- */
+
+  const I18N_ZH = {
+    // control bar & status
+    'Visual HTML Editor': '可视化 HTML 编辑器',
+    'free · in-browser · no sign-up': '免费 · 浏览器内使用 · 无需注册',
+    'Edit': '编辑', 'Editing': '编辑中', 'Open': '打开', 'Save As': '保存',
+    'Toggle edit mode': '切换编辑模式',
+    'Open a local HTML file (Ctrl+O)': '打开本地 HTML 文件 (Ctrl+O)',
+    'Download clean HTML (Ctrl+S)': '下载干净的 HTML 文件 (Ctrl+S)',
+    'Export as PDF': '导出 PDF',
+    'View mode': '视图模式',
+    'Editing · click to pause': '编辑中 · 点击暂停',
+    // toolbar
+    'Bold (Ctrl+B)': '加粗 (Ctrl+B)', 'Italic (Ctrl+I)': '斜体 (Ctrl+I)',
+    'Underline (Ctrl+U)': '下划线 (Ctrl+U)', 'Strikethrough': '删除线',
+    'Font family': '字体', 'Font size': '字号',
+    'Paragraph / heading level': '段落 / 标题级别',
+    'Align left': '左对齐', 'Align center': '居中对齐', 'Align right': '右对齐',
+    'Text color': '文字颜色', 'Background color': '背景颜色',
+    'Border radius': '圆角', 'Box shadow': '阴影', 'Opacity': '透明度',
+    'Insert element': '插入元素',
+    'Format brush — double-click for continuous mode': '格式刷 — 双击进入连续模式',
+    'Duplicate (Ctrl+D)': '复制元素 (Ctrl+D)',
+    'Move earlier in container': '在容器中前移', 'Move later in container': '在容器中后移',
+    'Lock / unlock (Ctrl+L)': '锁定 / 解锁 (Ctrl+L)',
+    'Delete (Del)': '删除 (Del)',
+    'Page sorter (Ctrl+Shift+P)': '页面管理器 (Ctrl+Shift+P)',
+    'Chart typography panel': '图表排版面板',
+    'Undo (Ctrl+Z)': '撤销 (Ctrl+Z)', 'Redo (Ctrl+Y)': '重做 (Ctrl+Y)',
+    // selects & option lists
+    'Default': '默认', 'Paragraph': '正文',
+    'Heading 1': '一级标题', 'Heading 2': '二级标题', 'Heading 3': '三级标题',
+    'Heading 4': '四级标题', 'Heading 5': '五级标题', 'Heading 6': '六级标题',
+    'None': '无', 'Subtle': '轻微', 'Medium': '中等', 'Large': '较大', 'X-Large': '特大',
+    'Small · 4px': '小 · 4px', 'Medium · 8px': '中 · 8px', 'Large · 12px': '大 · 12px',
+    'X-Large · 16px': '特大 · 16px', 'XX-Large · 24px': '超大 · 24px',
+    'Pill · 999px': '胶囊 · 999px', 'Circle · 50%': '圆形 · 50%',
+    // misc UI
+    'Insert an element here': '在此插入元素',
+    'Drop images to insert': '拖放图片到此处插入',
+    '{n} elements': '{n} 个元素',
+    'elements selected': '个元素已选中',
+    'Group': '编组', 'Duplicate': '复制', 'Delete': '删除',
+    'Shift+click to toggle · Ctrl+click to add': 'Shift+点击 取消 · Ctrl+点击 追加',
+    // toasts
+    'Undo': '已撤销', 'Redo': '已重做', 'Duplicated': '已复制元素',
+    'Element deleted': '已删除元素', '{n} elements deleted': '已删除 {n} 个元素',
+    'Locked 🔒 — click again + Ctrl+L to unlock': '已锁定 🔒 — 再按 Ctrl+L 解锁',
+    'Unlocked': '已解锁', 'Layer updated': '层级已更新',
+    'Style copied': '已复制样式', 'No style copied yet': '还没有已复制的样式',
+    'Style applied': '已应用样式', 'Inline styles cleared': '已清除内联样式',
+    'Copied {n} element(s)': '已复制 {n} 个元素',
+    'Clipboard is empty': '剪贴板为空', 'Pasted': '已粘贴',
+    'Select a styled element first': '请先选择一个带样式的元素',
+    'Continuous format brush — Esc to exit': '连续格式刷 — 按 Esc 退出',
+    'Format brush armed — click a target': '格式刷已就绪 — 点击目标元素',
+    'Invalid hex color': '无效的颜色值',
+    'Inserted — drag to reposition': '已插入 — 拖动可调整位置',
+    'Select multiple elements first (Ctrl+click)': '请先多选元素 (Ctrl+点击)',
+    'Cannot delete the last row': '不能删除最后一行',
+    'Cannot delete the last column': '不能删除最后一列',
+    'Stripes removed': '已移除斑马纹', 'Striped style applied': '已应用斑马纹',
+    'Select at least 2 elements to group (Ctrl+click)': '请至少选择 2 个元素再编组 (Ctrl+点击)',
+    'Grouped elements must share the same parent': '编组的元素必须在同一个父容器中',
+    'Grouped — drag to move together': '已编组 — 可整体拖动',
+    'Select a group first (teal dashed outline)': '请先选中一个编组（青色虚线框）',
+    'Ungrouped': '已解组', 'Select an element first': '请先选中一个元素',
+    'Generating…': '生成中…', 'Generating PDF…': '正在生成 PDF…',
+    'PDF libraries need network — using print instead': 'PDF 组件需联网 — 已改用打印导出',
+    'PDF exported ✓': 'PDF 已导出 ✓', 'PDF export failed: {msg}': 'PDF 导出失败：{msg}',
+    'Saved {name}': '已保存 {name}',
+    'Could not read file: {msg}': '无法读取文件：{msg}',
+    'Invalid HTML file': '无效的 HTML 文件',
+    'Opened {name} — click Edit to start': '已打开 {name} — 点击「编辑」开始',
+    'Only image files can be dropped': '只能拖放图片文件',
+    // dialogs
+    'Cancel': '取消', 'OK': '确定', 'Insert': '插入',
+    'Insert Table': '插入表格', 'Rows': '行数', 'Columns': '列数',
+    'Include header row': '包含表头行',
+    'Insert Image': '插入图片', 'Image URL': '图片 URL',
+    'https://… or leave empty if uploading a file': 'https://… 或留空后选择本地文件',
+    'Alt text (optional)': '替代文本（可选）', 'Describe the image': '描述这张图片',
+    'Provide an image URL or choose a file': '请填写图片 URL 或选择文件',
+    'Insert Link': '插入链接', 'Link text': '链接文字', 'Read more': '阅读更多',
+    'link': '链接',
+    // insert panel
+    '▤ Flow': '▤ 文档流', '✦ Float': '✦ 浮动',
+    'Container': '容器', 'Wrapper box for other content': '用于容纳其他内容的容器',
+    'Text Box': '文本框', 'A paragraph of text': '一段文本',
+    'Heading': '标题', 'Heading text (H2)': '标题文字 (H2)',
+    'Table': '表格', 'Rows & columns of data': '行与列的数据',
+    'Image': '图片', 'From file or URL': '来自文件或 URL',
+    'Button': '按钮', 'Clickable button element': '可点击的按钮',
+    'Divider': '分隔线', 'Horizontal rule': '水平分隔线',
+    'Link': '链接', 'Hyperlink text': '超链接文字',
+    'List': '列表', 'Bulleted list': '无序列表',
+    'Quote': '引用', 'Blockquote': '引用块',
+    // element factories
+    'Container — drop or insert elements here': '容器 — 在此放置或插入元素',
+    'Double-click to edit this text. Use the floating toolbar to change fonts, colors and alignment.': '双击编辑这段文字。可使用悬浮工具栏修改字体、颜色和对齐方式。',
+    'Your Heading Here': '在此输入标题', 'Click Me': '点我',
+    'First list item': '第一个列表项', 'Second list item': '第二个列表项', 'Third list item': '第三个列表项',
+    'Double-click to edit this quote.': '双击编辑这段引用。',
+    'Header': '表头', 'Cell': '单元格', 'Header {n}': '表头 {n}',
+    'Pasted image': '粘贴的图片', 'Text': '文字',
+    // context menu
+    'Unlock Element': '解锁元素', 'Select Parent': '选择父级',
+    'Edit Text': '编辑文字', 'Duplicate Element': '复制元素',
+    'Copy Style': '复制样式', 'Paste Style': '粘贴样式', 'Clear Style': '清除样式',
+    'Bring Forward': '上移一层', 'Send Backward': '下移一层',
+    'Bring to Front': '移到最前', 'Send to Back': '移到最后',
+    'Ungroup': '解组', 'Lock Element': '锁定元素',
+    'Insert Row Above': '在上方插入行', 'Insert Row Below': '在下方插入行',
+    'Insert Column Left': '在左侧插入列', 'Insert Column Right': '在右侧插入列',
+    'Delete Current Row': '删除当前行', 'Delete Current Column': '删除当前列',
+    'Toggle Table Style': '切换表格样式', 'Select Entire Table': '选中整个表格',
+    // page sorter panel
+    'Page Sorter': '页面管理器', '{n} blocks': '{n} 个区块',
+    'Move up': '上移', 'Move down': '下移',
+    'No page blocks found.': '未找到页面区块。', 'Close': '关闭',
+    // chart typography panel
+    'Chart Typography': '图表排版', 'Templates': '模板',
+    'Fine-tune selected': '微调选中元素',
+    'Font weight': '字重', 'Letter spacing': '字间距', 'Line height': '行高',
+    '300 Light': '300 细体', '400 Regular': '400 常规', '500 Medium': '500 中等',
+    '600 Semibold': '600 半粗', '700 Bold': '700 粗体', '800 Extrabold': '800 特粗',
+    'Insert {name}': '插入{name}',
+    'Data Card': '数据卡片', 'Metric Row': '指标行', 'Comparison': '对比',
+    'Table Heading': '表头排版', 'Legend': '图例', 'Annotation': '批注',
+    'Badge': '徽章', 'KPI Grid': 'KPI 网格',
+    // PDF panel
+    'Export PDF': '导出 PDF', 'Page size': '纸张大小',
+    'Custom size (mm)': '自定义尺寸 (mm)', 'Custom…': '自定义…',
+    'Orientation': '方向', '▯ Portrait': '▯ 纵向', '▭ Landscape': '▭ 横向',
+    'Margins T / R / B / L (mm)': '页边距 上/右/下/左 (mm)',
+    'Scale': '缩放', 'Preview page breaks': '预览分页线',
+    '⬇ Export PDF': '⬇ 导出 PDF', '🖨 Print / Save as PDF': '🖨 打印 / 存为 PDF',
+    'Page {n} starts here': '第 {n} 页从这里开始',
+    'portrait': '纵向', 'landscape': '横向', '{n} page(s)': '{n} 页'
+  };
+
+  // Landing-page (demo document) strings. Keys live in data-i18n attributes.
+  const DOC_ZH = {
+    'doc.title': '免费在线 HTML 编辑器 — 可视化所见即所得网页编辑器',
+    'doc.desc': '免费开源的浏览器内可视化 HTML 编辑器。点击选中、拖拽移动、双击编辑文字，插入表格与图片，导出干净的 HTML 或 PDF。无需注册，可离线使用。',
+    'hero.title': '免费在线可视化 HTML 编辑器',
+    'hero.sub': '在浏览器里<strong>所见即所得</strong>地编辑任何网页 —— 点击选中、拖拽移动、双击改写文字。无需代码、无需注册、无需上传：一切都在本地完成。',
+    'cta.btn': '✏️ 立即编辑这个页面',
+    'cta.hint': '…或点击顶栏的<b>编辑</b>按钮',
+    'quick.title': '五步上手',
+    'quick.s1': '<strong>选中</strong> —— 点击页面上的任意元素即可选中。',
+    'quick.s2': '<strong>移动</strong> —— 拖到任何位置；洋红色参考线帮你对齐。',
+    'quick.s3': '<strong>编辑</strong> —— 双击文字即可原地修改。',
+    'quick.s4': '<strong>插入</strong> —— 用工具栏的 <b>＋</b> 按钮或右键菜单插入表格、图片、按钮……',
+    'quick.s5': '<strong>保存</strong> —— 按 <kbd style="background:#f5f0e8;padding:2px 6px;border-radius:4px;font-size:.9em;">Ctrl+S</kbd> 下载干净的 HTML 文件。',
+    'feat.title': '功能一应俱全',
+    'feat.1h': '🖱 可视化拖拽', 'feat.1p': '智能对齐参考线与间距标签，随心重排任何元素；方向键可像素级微调。',
+    'feat.2h': '✏️ 行内富文本', 'feat.2p': '双击即可书写。悬浮工具栏提供加粗、斜体、标题、13 种字体、字号、颜色、对齐与效果。',
+    'feat.3h': '▦ 表格与图片', 'feat.3p': '插入表格并支持行/列操作；从桌面拖入图片，或直接从剪贴板粘贴。',
+    'feat.4h': '⌨️ 完整快捷键', 'feat.4p': '撤销/重做（100 步）、复制、样式复制粘贴、编组、锁定、图层 —— 全键盘操作。',
+    'feat.5h': '📦 多选与编组', 'feat.5p': 'Ctrl+点击或框选多个元素，编组后作为整体移动。',
+    'feat.6h': '📄 PDF 导出', 'feat.6p': '实时分页预览，可配置纸张、边距与缩放，一键导出 PDF。',
+    'use.title': '大家用它做什么',
+    'use.c1': '<strong>落地页</strong><br><span style="font-size: .9em; color: #3d3d3a;">几分钟内设计并导出。</span>',
+    'use.c2': '<strong>邮件模板</strong><br><span style="font-size: .9em; color: #3d3d3a;">表格布局也能可视化编辑。</span>',
+    'use.c3': '<strong>原型图</strong><br><span style="font-size: .9em; color: #3d3d3a;">无需设计工具即可出原型。</span>',
+    'use.c4': '<strong>PDF 文档</strong><br><span style="font-size: .9em; color: #3d3d3a;">分页报告与一页纸方案。</span>',
+    'use.c5': '<strong>博客文章</strong><br><span style="font-size: .9em; color: #3d3d3a;">图文表格的富文本写作。</span>',
+    'use.c6': '<strong>图表看板</strong><br><span style="font-size: .9em; color: #3d3d3a;">模板生成 KPI 卡片与图例。</span>',
+    'sc.title': '键盘快捷键', 'sc.thA': '操作', 'sc.thS': '快捷键',
+    'sc.save': '保存', 'sc.undo': '撤销 / 重做', 'sc.dup': '复制元素',
+    'sc.group': '编组 / 解组', 'sc.lock': '锁定 / 解锁',
+    'sc.style': '复制 / 粘贴样式', 'sc.del': '删除',
+    'sc.parent': '选中父级 / 取消选中', 'sc.nudge': '微调 1px / 10px',
+    'faq.title': '常见问题',
+    'faq.1q': '需要懂 HTML 或 CSS 吗？', 'faq.1a': '不需要 —— 所有操作都是点击与拖拽。如果你懂 HTML，则会欣赏导出文件的干净与语义化。',
+    'faq.2q': '真的免费吗？需要注册吗？', 'faq.2a': '真免费 —— 无账号、无试用、无付费墙。这是一个纯 HTML/JS 应用，甚至可以直接从本地文件运行。',
+    'faq.3q': '我的内容会上传到哪里？', 'faq.3a': '哪儿都不去。所有编辑都发生在这个浏览器标签页里，不上传任何数据。「保存」会把干净的 HTML 文件写到你的电脑上。',
+    'faq.4q': '能编辑已有的网页吗？', 'faq.4a': '可以 —— 点击<b>打开</b>（或 Ctrl+O），选择任意本地 .html 文件，即可可视化编辑。',
+    'faq.5q': '离线能用吗？', 'faq.5a': '页面加载完成后即可断网继续编辑。（仅一键导出 PDF 需联网加载渲染库 —— 打印导出离线可用。）',
+    'cmp.title': '为什么选择它？',
+    'cmp.v3': '本地', 'cmp.v4': '干净',
+    'cmp.l1': '永久免费', 'cmp.l2': '需要注册', 'cmp.l3': '数据不出浏览器', 'cmp.l4': '语义化输出',
+    'cta2.title': '现在就开始编辑',
+    'cta2.sub': '无需下载、无需信用卡。这个页面上的每个元素都是活的 —— 试着拖动这个横幅吧。',
+    'cta2.btn': '✏️ 进入编辑模式',
+    'f.p1': '一个从零实现、零依赖的浏览器可视化 HTML 编辑器。',
+    'f.p2': '所有编辑都在你的浏览器本地完成 —— 绝不上传任何数据。'
+  };
+
+  const docOrig = new Map();   // element → original (English) innerHTML
+  let origTitle = '';
+  let origDesc = '';
+
+  /** Translate a UI string (English key) into the active language. */
+  function t(s, vars) {
+    let out = (state.lang === 'zh' && Object.prototype.hasOwnProperty.call(I18N_ZH, s)) ? I18N_ZH[s] : s;
+    if (vars) for (const k in vars) out = out.split('{' + k + '}').join(String(vars[k]));
+    return out;
+  }
+
+  /** Swap <html lang>, <title> and meta description. */
+  function applyHeadLang() {
+    const zh = state.lang === 'zh';
+    document.documentElement.lang = zh ? 'zh-CN' : 'en';
+    document.title = zh ? DOC_ZH['doc.title'] : origTitle;
+    const md = document.querySelector('meta[name="description"]');
+    if (md) md.setAttribute('content', zh ? DOC_ZH['doc.desc'] : origDesc);
+  }
+
+  /** Translate every [data-i18n] element of the demo document. */
+  function applyDocumentLang() {
+    const els = document.querySelectorAll('[data-i18n]');
+    if (state.lang === 'zh') {
+      els.forEach(n => {
+        if (!docOrig.has(n)) docOrig.set(n, n.innerHTML);
+        const zh = DOC_ZH[n.getAttribute('data-i18n')];
+        if (zh != null) n.innerHTML = zh;
+      });
+    } else {
+      els.forEach(n => {
+        const orig = docOrig.get(n);
+        if (orig != null) n.innerHTML = orig;
+      });
+    }
+  }
+
+  /** Switch the whole interface + document language. */
+  function setLang(lang) {
+    if (lang !== 'zh' && lang !== 'en') return;
+    if (state.lang === lang) return;
+    state.lang = lang;
+    try { localStorage.setItem('hve-lang', lang); } catch (err) { /* private mode */ }
+    if (state.editingEl) exitTextEdit();
+    closeDropdown();
+    applyHeadLang();
+    applyDocumentLang();
+    refreshStaticUI();
+  }
+
+  /** Re-render the static UI chrome after a language switch. */
+  function refreshStaticUI() {
+    if (!controlBar) return;
+    const set = (sel, title, label) => {
+      const b = $(sel, controlBar);
+      if (!b) return;
+      if (title) b.title = title;
+      if (label) { const s = b.querySelector('span:not(.hve-cb-lang-x)'); if (s) s.textContent = label; }
+    };
+    const eb = $('#hve-cb-edit', controlBar);
+    if (eb) {
+      eb.title = t('Toggle edit mode');
+      const l = eb.querySelector('span');
+      if (l) l.textContent = state.editMode ? t('Editing') : t('Edit');
+    }
+    set('#hve-cb-open', t('Open a local HTML file (Ctrl+O)'), t('Open'));
+    set('#hve-cb-save', t('Download clean HTML (Ctrl+S)'), t('Save As'));
+    set('#hve-cb-pdf', t('Export as PDF'), 'PDF');
+    const small = controlBar.querySelector('.hve-logo-text small');
+    if (small) small.textContent = t('free · in-browser · no sign-up');
+    const langLabel = $('#hve-cb-lang-label');
+    if (langLabel) langLabel.textContent = state.lang === 'zh' ? 'EN' : '中文';
+    if (statusBtn) {
+      statusBtn.title = t('Toggle edit mode');
+      const st = $('#hve-status-text');
+      if (st) st.textContent = state.editMode ? t('Editing · click to pause') : t('View mode');
+    }
+    buildToolbarContent();
+    if (quickAddBtn) quickAddBtn.title = t('Insert an element here');
+    const dropSpan = dropOverlay && dropOverlay.querySelector('span');
+    if (dropSpan) dropSpan.textContent = t('Drop images to insert');
+    if (state.selected.length > 1) showMultiToast();
+    renderPanels();
+    updateToolbarState();
+    updateHistoryButtons();
+  }
 
   /* ---------------------------------------------------------
    * 2. Small utilities
@@ -165,13 +449,13 @@
 
   function toast(msg, type) {
     if (!toastWrap) return;
-    const t = el('div', { class: 'hve-toast ' + (type || 'info') },
+    const node = el('div', { class: 'hve-toast ' + (type || 'info') },
       '<span class="hve-toast-dot"></span><span></span>');
-    t.lastChild.textContent = msg;
-    toastWrap.appendChild(t);
+    node.lastChild.textContent = msg;
+    toastWrap.appendChild(node);
     setTimeout(() => {
-      t.classList.add('hve-toast-out');
-      setTimeout(() => t.remove(), 260);
+      node.classList.add('hve-toast-out');
+      setTimeout(() => node.remove(), 260);
     }, 2400);
   }
 
@@ -224,7 +508,7 @@
     const snap = state.undoStack.pop();
     applySnapshot(snap);
     updateHistoryButtons();
-    toast('Undo', 'info');
+    toast(t('Undo'), 'info');
   }
 
   function redo() {
@@ -236,7 +520,7 @@
     const snap = state.redoStack.pop();
     applySnapshot(snap);
     updateHistoryButtons();
-    toast('Redo', 'info');
+    toast(t('Redo'), 'info');
   }
 
   function updateHistoryButtons() {
@@ -381,12 +665,13 @@
     controlBar.innerHTML = `
       <div class="hve-logo">
         <div class="hve-logo-mark">HVE</div>
-        <div class="hve-logo-text">Visual HTML Editor<small>free · in-browser · no sign-up</small></div>
+        <div class="hve-logo-text">${t('Visual HTML Editor')}<small>${t('free · in-browser · no sign-up')}</small></div>
       </div>
-      <button class="hve-cb-btn" id="hve-cb-edit" title="Toggle edit mode">${ICONS.edit}<span>Edit</span></button>
-      <button class="hve-cb-btn" id="hve-cb-open" title="Open a local HTML file (Ctrl+O)">${ICONS.folder}<span>Open</span></button>
-      <button class="hve-cb-btn" id="hve-cb-save" title="Download clean HTML (Ctrl+S)">${ICONS.save}<span>Save As</span></button>
-      <button class="hve-cb-btn" id="hve-cb-pdf" title="Export as PDF">${ICONS.pdf}<span>PDF</span></button>
+      <button class="hve-cb-btn" id="hve-cb-edit" title="${t('Toggle edit mode')}">${ICONS.edit}<span>${t('Edit')}</span></button>
+      <button class="hve-cb-btn" id="hve-cb-open" title="${t('Open a local HTML file (Ctrl+O)')}">${ICONS.folder}<span>${t('Open')}</span></button>
+      <button class="hve-cb-btn" id="hve-cb-save" title="${t('Download clean HTML (Ctrl+S)')}">${ICONS.save}<span>${t('Save As')}</span></button>
+      <button class="hve-cb-btn" id="hve-cb-pdf" title="${t('Export as PDF')}">${ICONS.pdf}<span>PDF</span></button>
+      <button class="hve-cb-btn" id="hve-cb-lang" title="English / 中文" aria-label="English / 中文"><span class="hve-cb-lang-label" id="hve-cb-lang-label">${state.lang === 'zh' ? 'EN' : '中文'}</span></button>
       <div class="hve-cb-spacer"></div>
       <span class="hve-cb-filename" id="hve-cb-filename"></span>`;
     uiRoot.appendChild(controlBar);
@@ -394,62 +679,12 @@
     $('#hve-cb-open', controlBar).addEventListener('click', () => openFilePicker());
     $('#hve-cb-save', controlBar).addEventListener('click', () => saveAs());
     $('#hve-cb-pdf', controlBar).addEventListener('click', () => togglePanel('pdf'));
+    $('#hve-cb-lang', controlBar).addEventListener('click', () => setLang(state.lang === 'zh' ? 'en' : 'zh'));
 
     /* ---- floating toolbar ---- */
     toolbar = el('div', { 'class': 'hve-toolbar', 'data-hve-ui': '', 'role': 'toolbar' });
-
-    const btn = (id, html, title) =>
-      `<button id="hve-tb-${id}" data-hve-action="${id}" title="${title}" aria-label="${title}">${html}</button>`;
-
-    const groups = [
-      btn('bold', '<span class="hve-tb-bold">B</span>', 'Bold (Ctrl+B)') +
-      btn('italic', '<span class="hve-tb-italic">I</span>', 'Italic (Ctrl+I)') +
-      btn('underline', '<span class="hve-tb-underline">U</span>', 'Underline (Ctrl+U)') +
-      btn('strike', '<span class="hve-tb-strike">S</span>', 'Strikethrough'),
-
-      `<select class="hve-tb-select" id="hve-tb-font" title="Font family"></select>` +
-      `<select class="hve-tb-select" id="hve-tb-size" title="Font size"></select>` +
-      `<select class="hve-tb-select" id="hve-tb-heading" title="Paragraph / heading level"></select>`,
-
-      btn('align-left', ICONS.alignLeft, 'Align left') +
-      btn('align-center', ICONS.alignCenter, 'Align center') +
-      btn('align-right', ICONS.alignRight, 'Align right'),
-
-      btn('color', '<span style="font-weight:700;font-size:14px">A</span><span class="hve-color-swatch" id="hve-swatch-text"></span>', 'Text color') +
-      btn('bg-color', ICONS.drop + '<span class="hve-color-swatch" id="hve-swatch-bg"></span>', 'Background color'),
-
-      btn('radius', ICONS.radius, 'Border radius') +
-      btn('shadow', ICONS.shadow, 'Box shadow') +
-      btn('opacity', ICONS.opacity, 'Opacity'),
-
-      btn('insert', ICONS.plus, 'Insert element') +
-      btn('brush', ICONS.brush, 'Format brush — double-click for continuous mode') +
-      btn('duplicate', ICONS.copy, 'Duplicate (Ctrl+D)') +
-      btn('move-up', ICONS.arrowUp, 'Move earlier in container') +
-      btn('move-down', ICONS.arrowDown, 'Move later in container') +
-      btn('lock', ICONS.lock, 'Lock / unlock (Ctrl+L)') +
-      btn('delete', ICONS.trash, 'Delete (Del)'),
-
-      btn('pages', ICONS.layers, 'Page sorter (Ctrl+Shift+P)') +
-      btn('chart', ICONS.chart, 'Chart typography panel') +
-      btn('undo', ICONS.undo, 'Undo (Ctrl+Z)') +
-      btn('redo', ICONS.redo, 'Redo (Ctrl+Y)')
-    ];
-
-    toolbar.innerHTML = groups.map(html =>
-      `<span class="hve-tb-group">${html}</span>`).join('<span class="hve-tb-sep"></span>');
+    buildToolbarContent();
     uiRoot.appendChild(toolbar);
-
-    const fontSel = $('#hve-tb-font', toolbar);
-    FONT_OPTIONS.forEach(f => fontSel.add(new Option(f.label, f.value)));
-    const sizeSel = $('#hve-tb-size', toolbar);
-    SIZE_OPTIONS.forEach(s => sizeSel.add(new Option(s + 'px', s + 'px')));
-    const headSel = $('#hve-tb-heading', toolbar);
-    HEADING_OPTIONS.forEach(h => headSel.add(new Option(h.label, h.value)));
-
-    fontSel.addEventListener('change', () => applyFontFamily(fontSel.value));
-    sizeSel.addEventListener('change', () => applyFontSize(sizeSel.value));
-    headSel.addEventListener('change', () => applyHeading(headSel.value));
 
     toolbar.addEventListener('click', (e) => {
       const b = e.target.closest('button[data-hve-action]');
@@ -462,8 +697,8 @@
     });
 
     /* ---- status pill ---- */
-    statusBtn = el('button', { 'class': 'hve-status', 'data-hve-ui': '', title: 'Toggle edit mode' },
-      '<span class="hve-status-dot"></span><span id="hve-status-text">View mode</span>');
+    statusBtn = el('button', { 'class': 'hve-status', 'data-hve-ui': '', title: t('Toggle edit mode') },
+      '<span class="hve-status-dot"></span><span id="hve-status-text">' + t('View mode') + '</span>');
     statusBtn.addEventListener('click', () => toggleEditMode());
     uiRoot.appendChild(statusBtn);
 
@@ -499,7 +734,7 @@
     marqueeEl.style.display = 'none';
     uiRoot.appendChild(marqueeEl);
 
-    quickAddBtn = el('button', { 'class': 'hve-quick-add', 'data-hve-ui': '', title: 'Insert an element here' }, '+');
+    quickAddBtn = el('button', { 'class': 'hve-quick-add', 'data-hve-ui': '', title: t('Insert an element here') }, '+');
     quickAddBtn.style.display = 'none';
     quickAddBtn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -510,11 +745,66 @@
     uiRoot.appendChild(quickAddBtn);
 
     dropOverlay = el('div', { 'class': 'hve-drop-overlay', 'data-hve-ui': '' },
-      '<div class="hve-drop-card"><div style="font-size:34px">🖼️</div><span>Drop images to insert</span></div>');
+      '<div class="hve-drop-card"><div style="font-size:34px">🖼️</div><span>' + t('Drop images to insert') + '</span></div>');
     dropOverlay.style.display = 'none';
     uiRoot.appendChild(dropOverlay);
 
     requestAnimationFrame(tick);
+  }
+
+  /* (Re)build the toolbar contents — called on init and on language switch. */
+  function buildToolbarContent() {
+    const btn = (id, html, title) =>
+      `<button id="hve-tb-${id}" data-hve-action="${id}" title="${title}" aria-label="${title}">${html}</button>`;
+
+    const groups = [
+      btn('bold', '<span class="hve-tb-bold">B</span>', t('Bold (Ctrl+B)')) +
+      btn('italic', '<span class="hve-tb-italic">I</span>', t('Italic (Ctrl+I)')) +
+      btn('underline', '<span class="hve-tb-underline">U</span>', t('Underline (Ctrl+U)')) +
+      btn('strike', '<span class="hve-tb-strike">S</span>', t('Strikethrough')),
+
+      `<select class="hve-tb-select" id="hve-tb-font" title="${t('Font family')}"></select>` +
+      `<select class="hve-tb-select" id="hve-tb-size" title="${t('Font size')}"></select>` +
+      `<select class="hve-tb-select" id="hve-tb-heading" title="${t('Paragraph / heading level')}"></select>`,
+
+      btn('align-left', ICONS.alignLeft, t('Align left')) +
+      btn('align-center', ICONS.alignCenter, t('Align center')) +
+      btn('align-right', ICONS.alignRight, t('Align right')),
+
+      btn('color', '<span style="font-weight:700;font-size:14px">A</span><span class="hve-color-swatch" id="hve-swatch-text"></span>', t('Text color')) +
+      btn('bg-color', ICONS.drop + '<span class="hve-color-swatch" id="hve-swatch-bg"></span>', t('Background color')),
+
+      btn('radius', ICONS.radius, t('Border radius')) +
+      btn('shadow', ICONS.shadow, t('Box shadow')) +
+      btn('opacity', ICONS.opacity, t('Opacity')),
+
+      btn('insert', ICONS.plus, t('Insert element')) +
+      btn('brush', ICONS.brush, t('Format brush — double-click for continuous mode')) +
+      btn('duplicate', ICONS.copy, t('Duplicate (Ctrl+D)')) +
+      btn('move-up', ICONS.arrowUp, t('Move earlier in container')) +
+      btn('move-down', ICONS.arrowDown, t('Move later in container')) +
+      btn('lock', ICONS.lock, t('Lock / unlock (Ctrl+L)')) +
+      btn('delete', ICONS.trash, t('Delete (Del)')),
+
+      btn('pages', ICONS.layers, t('Page sorter (Ctrl+Shift+P)')) +
+      btn('chart', ICONS.chart, t('Chart typography panel')) +
+      btn('undo', ICONS.undo, t('Undo (Ctrl+Z)')) +
+      btn('redo', ICONS.redo, t('Redo (Ctrl+Y)'))
+    ];
+
+    toolbar.innerHTML = groups.map(html =>
+      `<span class="hve-tb-group">${html}</span>`).join('<span class="hve-tb-sep"></span>');
+
+    const fontSel = $('#hve-tb-font', toolbar);
+    FONT_OPTIONS.forEach(f => fontSel.add(new Option(t(f.label), f.value)));
+    const sizeSel = $('#hve-tb-size', toolbar);
+    SIZE_OPTIONS.forEach(s => sizeSel.add(new Option(s + 'px', s + 'px')));
+    const headSel = $('#hve-tb-heading', toolbar);
+    HEADING_OPTIONS.forEach(h => headSel.add(new Option(t(h.label), h.value)));
+
+    fontSel.addEventListener('change', () => applyFontFamily(fontSel.value));
+    sizeSel.addEventListener('change', () => applyFontSize(sizeSel.value));
+    headSel.addEventListener('change', () => applyHeading(headSel.value));
   }
 
   function tick() {
@@ -537,10 +827,10 @@
     if (eb) {
       eb.classList.toggle('active', target);
       const label = eb.querySelector('span');
-      if (label) label.textContent = target ? 'Editing' : 'Edit';
+      if (label) label.textContent = target ? t('Editing') : t('Edit');
     }
     const st = $('#hve-status-text');
-    if (st) st.textContent = target ? 'Editing · click to pause' : 'View mode';
+    if (st) st.textContent = target ? t('Editing · click to pause') : t('View mode');
     if (!target) {
       if (state.editingEl) exitTextEdit();
       clearSelection();
@@ -559,9 +849,9 @@
   function onMouseOver(e) {
     if (!state.editMode || state.dragging || state.resizing) return;
     if (isUI(e.target)) return;
-    const t = e.target;
-    if (t === document.body || t === document.documentElement) { clearHover(); return; }
-    setHover(t);
+    const ht = e.target;
+    if (ht === document.body || ht === document.documentElement) { clearHover(); return; }
+    setHover(ht);
   }
 
   function onMouseDown(e) {
@@ -655,7 +945,7 @@
         box.style.cssText = 'width:100%;height:100%;border:2px dashed #cc785c;border-radius:10px;' +
           'background:rgba(204,120,92,0.08);display:flex;align-items:center;justify-content:center;' +
           'color:#cc785c;font:600 13px -apple-system,sans-serif;';
-        box.textContent = els.length + ' elements';
+        box.textContent = t('{n} elements', { n: els.length });
         dragGhost.appendChild(box);
       }
       dragGhost.style.width = r.width + 'px';
@@ -1040,7 +1330,7 @@
       editable.removeAttribute('contenteditable');
       editable.removeAttribute('data-hve-editing');
       if (!editable.textContent.trim() && !editable.querySelector('img,br')) {
-        editable.textContent = 'Text';
+        editable.textContent = t('Text');
       }
     }
     updateToolbarState();
@@ -1210,7 +1500,7 @@
       clones.push(c);
     });
     if (clones.length) setSelection(clones);
-    toast('Duplicated', 'success');
+    toast(t('Duplicated'), 'success');
   }
 
   function deleteSelection() {
@@ -1219,7 +1509,7 @@
     const n = state.selected.length;
     state.selected.forEach(s => s.remove());
     clearSelection();
-    toast(n > 1 ? n + ' elements deleted' : 'Element deleted', 'info');
+    toast(n > 1 ? t('{n} elements deleted', { n }) : t('Element deleted'), 'info');
   }
 
   function moveSelection(dir) {
@@ -1244,8 +1534,8 @@
       if (locking) s.setAttribute('data-hve-locked', '');
       else s.removeAttribute('data-hve-locked');
     });
-    if (locking) { showResizeBox(state.selected[0]); toast('Locked 🔒 — click again + Ctrl+L to unlock', 'success'); }
-    else { toast('Unlocked', 'info'); }
+    if (locking) { showResizeBox(state.selected[0]); toast(t('Locked 🔒 — click again + Ctrl+L to unlock'), 'success'); }
+    else { toast(t('Unlocked'), 'info'); }
     updateToolbarState();
   }
 
@@ -1277,7 +1567,7 @@
       else if (op === 'front') s.style.zIndex = max + 1;
       else if (op === 'back') s.style.zIndex = min - 1;
     });
-    toast('Layer updated', 'info');
+    toast(t('Layer updated'), 'info');
   }
 
   /* ---- copy / paste / clear style ---- */
@@ -1285,24 +1575,24 @@
   function copyStyle() {
     if (!state.selected.length) return;
     state.styleClipboard = state.selected[0].style.cssText || '';
-    toast('Style copied', 'success');
+    toast(t('Style copied'), 'success');
   }
 
   function pasteStyle() {
     if (!state.selected.length || !state.styleClipboard) {
-      if (!state.styleClipboard) toast('No style copied yet', 'error');
+      if (!state.styleClipboard) toast(t('No style copied yet'), 'error');
       return;
     }
     pushUndo();
     forEachSelected(s => { s.style.cssText = state.styleClipboard; });
-    toast('Style applied', 'success');
+    toast(t('Style applied'), 'success');
   }
 
   function clearStyle() {
     if (!state.selected.length) return;
     pushUndo();
     forEachSelected(s => { s.removeAttribute('style'); });
-    toast('Inline styles cleared', 'info');
+    toast(t('Inline styles cleared'), 'info');
   }
 
   function copyInternal() {
@@ -1314,7 +1604,7 @@
       clone.appendChild(c);
     });
     state.clipboardHTML = clone.innerHTML;
-    toast('Copied ' + state.selected.length + ' element(s)', 'success');
+    toast(t('Copied {n} element(s)', { n: state.selected.length }), 'success');
   }
 
   function cutInternal() {
@@ -1324,7 +1614,7 @@
   }
 
   function pasteInternal() {
-    if (!state.clipboardHTML) { toast('Clipboard is empty', 'error'); return; }
+    if (!state.clipboardHTML) { toast(t('Clipboard is empty'), 'error'); return; }
     pushUndo();
     const tpl = document.createElement('template');
     tpl.innerHTML = state.clipboardHTML;
@@ -1338,14 +1628,14 @@
       prev = n;
     });
     if (nodes.length) setSelection(nodes);
-    toast('Pasted', 'success');
+    toast(t('Pasted'), 'success');
   }
 
   /* ---- format brush ---- */
 
   function armBrush(continuous) {
     if (!state.selected.length && !state.brush) {
-      toast('Select a styled element first', 'error');
+      toast(t('Select a styled element first'), 'error');
       return;
     }
     if (state.brush && !continuous) { disarmBrush(); return; }
@@ -1358,7 +1648,7 @@
     document.documentElement.setAttribute('data-hve-format-brush-active', '');
     const b = $('#hve-tb-brush');
     if (b) b.classList.add('hve-brush-active');
-    toast(continuous ? 'Continuous format brush — Esc to exit' : 'Format brush armed — click a target', 'info');
+    toast(continuous ? t('Continuous format brush — Esc to exit') : t('Format brush armed — click a target'), 'info');
   }
 
   function disarmBrush() {
@@ -1375,7 +1665,7 @@
     for (const p in st) {
       if (st[p]) target.style[p] = st[p];
     }
-    toast('Style applied', 'success');
+    toast(t('Style applied'), 'success');
     if (!state.brush.continuous) disarmBrush();
   }
 
@@ -1406,11 +1696,11 @@
     closeDropdown();
     const cur = getComputedStyle(state.selected[0])[cssProp];
     const menu = el('div', { 'class': 'hve-dropdown', 'data-hve-ui': '' });
-    menu.appendChild(el('div', { 'class': 'hve-dd-item', style: 'font-size:11px;color:#8e8b82;pointer-events:none;font-weight:600;letter-spacing:.5px;text-transform:uppercase' }, title));
+    menu.appendChild(el('div', { 'class': 'hve-dd-item', style: 'font-size:11px;color:#8e8b82;pointer-events:none;font-weight:600;letter-spacing:.5px;text-transform:uppercase' }, t(title)));
     options.forEach(o => {
       const item = el('div', { 'class': 'hve-dd-item' },
         `<span class="hve-dd-icon"></span><span></span>`);
-      item.children[1].textContent = o.label;
+      item.children[1].textContent = t(o.label);
       if (normStyle(cur) === normStyle(o.value)) item.style.background = '#efe9de';
       item.addEventListener('click', () => {
         pushUndo();
@@ -1440,7 +1730,7 @@
       pushUndo('opacity');
       forEachSelected(s => { s.style.opacity = slider.value / 100; });
     });
-    row.appendChild(el('label', {}, 'Opacity'));
+    row.appendChild(el('label', {}, t('Opacity')));
     row.appendChild(slider);
     row.appendChild(val);
     menu.appendChild(row);
@@ -1457,7 +1747,7 @@
     const currentHex = rgbToHex(current);
 
     panel.appendChild(el('div', { 'class': 'hve-cp-title' },
-      mode === 'text' ? 'Text color' : 'Background color'));
+      mode === 'text' ? t('Text color') : t('Background color')));
 
     const grid = el('div', { 'class': 'hve-cp-grid' });
     COLOR_SWATCHES.forEach(c => {
@@ -1486,7 +1776,7 @@
           if (!v.startsWith('#')) v = '#' + v;
           applyColorValue(v, mode);
           closeDropdown();
-        } else toast('Invalid hex color', 'error');
+        } else toast(t('Invalid hex color'), 'error');
       }
     });
     custom.appendChild(native);
@@ -1581,21 +1871,21 @@
         const cb = el('input', { type: 'checkbox' });
         cb.checked = !!f.value;
         row.appendChild(cb);
-        row.appendChild(document.createTextNode(f.label));
+        row.appendChild(document.createTextNode(t(f.label)));
         dlg.appendChild(row);
         inputs[f.key] = cb;
         return;
       }
-      dlg.appendChild(el('label', {}, f.label));
+      dlg.appendChild(el('label', {}, t(f.label)));
       let inp;
       if (f.type === 'select') {
         inp = el('select');
-        f.options.forEach(o => inp.add(new Option(o.label, o.value)));
+        f.options.forEach(o => inp.add(new Option(t(o.label), o.value)));
         inp.value = f.value != null ? f.value : (f.options[0] && f.options[0].value);
       } else {
         inp = el('input', { type: f.type || 'text' });
         if (f.value != null) inp.value = f.value;
-        if (f.placeholder) inp.placeholder = f.placeholder;
+        if (f.placeholder) inp.placeholder = t(f.placeholder);
         if (f.min != null) inp.min = f.min;
         if (f.max != null) inp.max = f.max;
       }
@@ -1606,8 +1896,8 @@
     if (config.custom) config.custom(dlg, inputs);
 
     const actions = el('div', { 'class': 'hve-dialog-actions' });
-    const cancel = el('button', { 'class': 'hve-btn-cancel' }, 'Cancel');
-    const ok = el('button', { 'class': 'hve-btn-confirm' }, config.okLabel || 'OK');
+    const cancel = el('button', { 'class': 'hve-btn-cancel' }, t('Cancel'));
+    const ok = el('button', { 'class': 'hve-btn-confirm' }, t(config.okLabel || 'OK'));
     actions.appendChild(cancel);
     actions.appendChild(ok);
     dlg.appendChild(actions);
@@ -1656,11 +1946,11 @@
   function openInsertPanel(x, y) {
     closeDropdown();
     const panel = el('div', { 'class': 'hve-insert-panel', 'data-hve-ui': '' });
-    panel.appendChild(el('div', { 'class': 'hve-ip-title' }, 'Insert element'));
+    panel.appendChild(el('div', { 'class': 'hve-ip-title' }, t('Insert element')));
 
     const modeRow = el('div', { 'class': 'hve-ip-mode' });
-    const flowBtn = el('button', { 'class': 'hve-ip-mode-btn' + (state.insertMode === 'flow' ? ' active' : '') }, '▤ Flow');
-    const floatBtn = el('button', { 'class': 'hve-ip-mode-btn' + (state.insertMode === 'float' ? ' active' : '') }, '✦ Float');
+    const flowBtn = el('button', { 'class': 'hve-ip-mode-btn' + (state.insertMode === 'flow' ? ' active' : '') }, t('▤ Flow'));
+    const floatBtn = el('button', { 'class': 'hve-ip-mode-btn' + (state.insertMode === 'float' ? ' active' : '') }, t('✦ Float'));
     flowBtn.addEventListener('click', () => {
       state.insertMode = 'flow';
       flowBtn.classList.add('active'); floatBtn.classList.remove('active');
@@ -1677,8 +1967,8 @@
       const row = el('div', { 'class': 'hve-ip-item' });
       row.innerHTML = `<div class="hve-ip-icon">${item.icon}</div>
         <div class="hve-ip-text"><b></b><span></span></div>`;
-      row.querySelector('b').textContent = item.name;
-      row.querySelector('span').textContent = item.desc;
+      row.querySelector('b').textContent = t(item.name);
+      row.querySelector('span').textContent = t(item.desc);
       row.addEventListener('click', () => {
         closeDropdown();
         insertNewItem(item.id);
@@ -1716,27 +2006,27 @@
       style: 'min-height:120px;border:2px dashed #d8cec2;border-radius:12px;padding:16px;margin:12px 0;' +
         'display:flex;align-items:center;justify-content:center;color:#b3ada2;' +
         'font:500 13px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;'
-    }, 'Container — drop or insert elements here');
+    }, t('Container — drop or insert elements here'));
   }
 
   function makeTextBox() {
     return el('p', {
       style: 'margin:12px 0;line-height:1.7;color:#3d3d3a;' +
         'font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;'
-    }, 'Double-click to edit this text. Use the floating toolbar to change fonts, colors and alignment.');
+    }, t('Double-click to edit this text. Use the floating toolbar to change fonts, colors and alignment.'));
   }
 
   function makeHeading() {
     return el('h2', {
       style: 'margin:18px 0 10px;color:#141413;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;'
-    }, 'Your Heading Here');
+    }, t('Your Heading Here'));
   }
 
   function makeButton() {
     return el('button', {
       style: 'padding:12px 26px;border:none;border-radius:10px;background:linear-gradient(135deg,#cc785c,#a9583e);' +
         'color:#fff;font:600 15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer;margin:10px 0;'
-    }, 'Click Me');
+    }, t('Click Me'));
   }
 
   function makeDivider() {
@@ -1745,8 +2035,8 @@
 
   function makeList() {
     const ul = el('ul', { style: 'margin:12px 0;padding-left:24px;line-height:1.9;color:#3d3d3a;' });
-    ['First list item', 'Second list item', 'Third list item'].forEach(t => {
-      const li = el('li', {}, t);
+    ['First list item', 'Second list item', 'Third list item'].forEach(txt => {
+      const li = el('li', {}, t(txt));
       ul.appendChild(li);
     });
     return ul;
@@ -1756,7 +2046,7 @@
     return el('blockquote', {
       style: 'margin:16px 0;padding:10px 20px;border-left:4px solid #cc785c;background:#faf9f5;' +
         'border-radius:0 10px 10px 0;color:#6c6a64;font-style:italic;'
-    }, 'Double-click to edit this quote.');
+    }, t('Double-click to edit this quote.'));
   }
 
   function makeTable(rows, cols, header) {
@@ -1770,7 +2060,7 @@
         const cell = el(isHead ? 'th' : 'td', {
           style: 'border:1px solid #d8cec2;padding:10px 14px;text-align:left;' +
             (isHead ? 'background:#f5f0e8;font-weight:600;color:#141413;' : 'color:#3d3d3a;')
-        }, isHead ? 'Header ' + (c + 1) : 'Cell');
+        }, isHead ? t('Header {n}', { n: c + 1 }) : t('Cell'));
         tr.appendChild(cell);
       }
       table.appendChild(tr);
@@ -1780,23 +2070,23 @@
 
   function makeImage(src, alt) {
     return el('img', {
-      src: src, alt: alt || 'Image',
+      src: src, alt: alt ? t(alt) : t('Image'),
       style: 'max-width:100%;height:auto;border-radius:12px;margin:12px 0;display:block;'
     });
   }
 
   function openTableDialog() {
     openDialog({
-      title: 'Insert Table',
+      title: t('Insert Table'),
       fields: [
-        { key: 'rows', label: 'Rows', type: 'number', value: 3, min: 1, max: 50 },
-        { key: 'cols', label: 'Columns', type: 'number', value: 3, min: 1, max: 20 },
-        { key: 'header', label: 'Include header row', type: 'checkbox', value: true }
+        { key: 'rows', label: t('Rows'), type: 'number', value: 3, min: 1, max: 50 },
+        { key: 'cols', label: t('Columns'), type: 'number', value: 3, min: 1, max: 20 },
+        { key: 'header', label: t('Include header row'), type: 'checkbox', value: true }
       ],
-      okLabel: 'Insert',
+      okLabel: t('Insert'),
       onOK: (v) => {
-        const t = makeTable(clamp(parseInt(v.rows) || 3, 1, 50), clamp(parseInt(v.cols) || 3, 1, 20), v.header);
-        insertElements([t]);
+        const tbl = makeTable(clamp(parseInt(v.rows) || 3, 1, 50), clamp(parseInt(v.cols) || 3, 1, 20), v.header);
+        insertElements([tbl]);
       }
     });
   }
@@ -1804,12 +2094,12 @@
   function openImageDialog() {
     let fileData = null;
     openDialog({
-      title: 'Insert Image',
+      title: t('Insert Image'),
       fields: [
-        { key: 'url', label: 'Image URL', type: 'text', placeholder: 'https://… or leave empty if uploading a file' },
-        { key: 'alt', label: 'Alt text (optional)', type: 'text', placeholder: 'Describe the image' }
+        { key: 'url', label: t('Image URL'), type: 'text', placeholder: t('https://… or leave empty if uploading a file') },
+        { key: 'alt', label: t('Alt text (optional)'), type: 'text', placeholder: t('Describe the image') }
       ],
-      okLabel: 'Insert',
+      okLabel: t('Insert'),
       custom: (dlg, inputs) => {
         const wrap = el('div', {});
         wrap.appendChild(el('label', {}, 'Or choose a file'));
@@ -1831,7 +2121,7 @@
         } else if (v.url && v.url.trim()) {
           insertElements([makeImage(v.url.trim(), v.alt)]);
         } else {
-          toast('Provide an image URL or choose a file', 'error');
+          toast(t('Provide an image URL or choose a file'), 'error');
         }
       }
     });
@@ -1839,17 +2129,17 @@
 
   function openLinkDialog() {
     openDialog({
-      title: 'Insert Link',
+      title: t('Insert Link'),
       fields: [
-        { key: 'text', label: 'Link text', type: 'text', value: 'Read more', placeholder: 'Link text' },
+        { key: 'text', label: t('Link text'), type: 'text', value: t('Read more'), placeholder: t('Link text') },
         { key: 'href', label: 'URL', type: 'text', value: 'https://', placeholder: 'https://…' }
       ],
-      okLabel: 'Insert',
+      okLabel: t('Insert'),
       onOK: (v) => {
         const a = el('a', {
           href: v.href || '#',
           style: 'color:#a9583e;text-decoration:underline;font-weight:500;'
-        }, v.text || 'link');
+        }, v.text || t('link'));
         insertElements([a]);
       }
     });
@@ -1886,7 +2176,7 @@
       setSelection(elements);
       elements[0].scrollIntoView({ block: 'center', behavior: 'smooth' });
     }
-    toast('Inserted — drag to reposition', 'success');
+    toast(t('Inserted — drag to reposition'), 'success');
   }
 
   /* ---------------------------------------------------------
@@ -1924,51 +2214,51 @@
     const addSep = () => menu.appendChild(el('div', { 'class': 'hve-cm-divider' }));
 
     if (locked) {
-      addItem('🔓', 'Unlock Element', 'Ctrl+L', toggleLock);
-      addItem('⬆', 'Select Parent', 'Esc', () => selectParent());
+      addItem('🔓', t('Unlock Element'), 'Ctrl+L', toggleLock);
+      addItem('⬆', t('Select Parent'), 'Esc', () => selectParent());
       openMenu(menu, e);
       return;
     }
 
-    addItem('✏️', 'Edit Text', 'Dbl-click', () => enterTextEdit(target));
-    addItem('⧉', 'Duplicate Element', 'Ctrl+D', duplicateSelection);
+    addItem('✏️', t('Edit Text'), 'Dbl-click', () => enterTextEdit(target));
+    addItem('⧉', t('Duplicate Element'), 'Ctrl+D', duplicateSelection);
     addSep();
 
-    addItem('🎨', 'Copy Style', 'Ctrl+Shift+C', copyStyle);
-    addItem('🖌', 'Paste Style', 'Ctrl+Shift+V', pasteStyle);
-    addItem('🧹', 'Clear Style', '', clearStyle);
+    addItem('🎨', t('Copy Style'), 'Ctrl+Shift+C', copyStyle);
+    addItem('🖌', t('Paste Style'), 'Ctrl+Shift+V', pasteStyle);
+    addItem('🧹', t('Clear Style'), '', clearStyle);
     addSep();
 
-    addItem('⬆', 'Bring Forward', '', () => layerOp('forward'));
-    addItem('⬇', 'Send Backward', '', () => layerOp('backward'));
-    addItem('⏫', 'Bring to Front', '', () => layerOp('front'));
-    addItem('⏬', 'Send to Back', '', () => layerOp('back'));
+    addItem('⬆', t('Bring Forward'), '', () => layerOp('forward'));
+    addItem('⬇', t('Send Backward'), '', () => layerOp('backward'));
+    addItem('⏫', t('Bring to Front'), '', () => layerOp('front'));
+    addItem('⏬', t('Send to Back'), '', () => layerOp('back'));
     addSep();
 
     if (multi) {
-      addItem('📦', 'Group', 'Ctrl+G', groupSelection);
+      addItem('📦', t('Group'), 'Ctrl+G', groupSelection);
     } else if (groupEl) {
-      addItem('📦', 'Ungroup', 'Ctrl+Shift+G', ungroupSelection);
+      addItem('📦', t('Ungroup'), 'Ctrl+Shift+G', ungroupSelection);
     } else {
-      addItem('📦', 'Group', 'Ctrl+G', () => toast('Select multiple elements first (Ctrl+click)', 'error'));
+      addItem('📦', t('Group'), 'Ctrl+G', () => toast(t('Select multiple elements first (Ctrl+click)'), 'error'));
     }
-    addItem('🔒', 'Lock Element', 'Ctrl+L', toggleLock);
-    addItem('⬆', 'Select Parent', 'Esc', () => selectParent());
+    addItem('🔒', t('Lock Element'), 'Ctrl+L', toggleLock);
+    addItem('⬆', t('Select Parent'), 'Esc', () => selectParent());
 
     if (cell && table) {
       addSep();
-      addItem('↕', 'Insert Row Above', '', () => tableRowOp(table, cell, 'row-above'));
-      addItem('↕', 'Insert Row Below', '', () => tableRowOp(table, cell, 'row-below'));
-      addItem('↔', 'Insert Column Left', '', () => tableColOp(table, cell, 'col-left'));
-      addItem('↔', 'Insert Column Right', '', () => tableColOp(table, cell, 'col-right'));
-      addItem('✂', 'Delete Current Row', '', () => tableRowOp(table, cell, 'row-del'));
-      addItem('✂', 'Delete Current Column', '', () => tableColOp(table, cell, 'col-del'));
-      addItem('🎨', 'Toggle Table Style', '', () => toggleTableStripes(table));
-      addItem('▦', 'Select Entire Table', '', () => setSelection([table]));
+      addItem('↕', t('Insert Row Above'), '', () => tableRowOp(table, cell, 'row-above'));
+      addItem('↕', t('Insert Row Below'), '', () => tableRowOp(table, cell, 'row-below'));
+      addItem('↔', t('Insert Column Left'), '', () => tableColOp(table, cell, 'col-left'));
+      addItem('↔', t('Insert Column Right'), '', () => tableColOp(table, cell, 'col-right'));
+      addItem('✂', t('Delete Current Row'), '', () => tableRowOp(table, cell, 'row-del'));
+      addItem('✂', t('Delete Current Column'), '', () => tableColOp(table, cell, 'col-del'));
+      addItem('🎨', t('Toggle Table Style'), '', () => toggleTableStripes(table));
+      addItem('▦', t('Select Entire Table'), '', () => setSelection([table]));
     }
 
     addSep();
-    addItem('🗑', 'Delete', 'Del', deleteSelection, true);
+    addItem('🗑', t('Delete'), 'Del', deleteSelection, true);
 
     openMenu(menu, e);
   }
@@ -2000,13 +2290,13 @@
       const tr = el('tr', {});
       for (let i = 0; i < cols; i++) {
         const td = el(row.firstElementChild.tagName === 'TH' && op === 'row-below' ? 'td' : 'td',
-          { style: cellStyleFor('td') }, 'Cell');
+          { style: cellStyleFor('td') }, t('Cell'));
         tr.appendChild(td);
       }
       if (op === 'row-above') row.parentElement.insertBefore(tr, row);
       else row.insertAdjacentElement('afterend', tr);
     } else if (op === 'row-del') {
-      if (table.rows.length <= 1) { toast('Cannot delete the last row', 'error'); return; }
+      if (table.rows.length <= 1) { toast(t('Cannot delete the last row'), 'error'); return; }
       row.remove();
     }
     updateToolbarState();
@@ -2020,12 +2310,12 @@
       rows.forEach(r => {
         const ref = r.children[colIdx];
         const td = el(ref.tagName === 'TH' ? 'th' : 'td', { style: cellStyleFor(ref.tagName.toLowerCase()) },
-          ref.tagName === 'TH' ? 'Header' : 'Cell');
+          ref.tagName === 'TH' ? t('Header') : t('Cell'));
         if (op === 'col-left') r.insertBefore(td, ref);
         else ref.insertAdjacentElement('afterend', td);
       });
     } else if (op === 'col-del') {
-      if (rows[0].children.length <= 1) { toast('Cannot delete the last column', 'error'); return; }
+      if (rows[0].children.length <= 1) { toast(t('Cannot delete the last column'), 'error'); return; }
       rows.forEach(r => { if (r.children[colIdx]) r.children[colIdx].remove(); });
     }
     updateToolbarState();
@@ -2042,7 +2332,7 @@
       });
     });
     table.setAttribute('data-striped', striped ? 'off' : 'on');
-    toast(striped ? 'Stripes removed' : 'Striped style applied', 'info');
+    toast(striped ? t('Stripes removed') : t('Striped style applied'), 'info');
   }
 
   /* ---------------------------------------------------------
@@ -2054,13 +2344,13 @@
     multiToast.style.display = 'flex';
     multiToast.innerHTML = `
       <div class="hve-multi-info"><span class="hve-multi-dot"></span>
-        <span><b></b> elements selected</span></div>
+        <span><b></b> ${t('elements selected')}</span></div>
       <div class="hve-multi-actions">
-        <button data-ma="group">📦 Group</button>
-        <button data-ma="duplicate">⧉ Duplicate</button>
-        <button data-ma="delete" class="danger">🗑 Delete</button>
+        <button data-ma="group">📦 ${t('Group')}</button>
+        <button data-ma="duplicate">⧉ ${t('Duplicate')}</button>
+        <button data-ma="delete" class="danger">🗑 ${t('Delete')}</button>
       </div>
-      <div class="hve-multi-hint">Shift+click to toggle · Ctrl+click to add</div>`;
+      <div class="hve-multi-hint">${t('Shift+click to toggle · Ctrl+click to add')}</div>`;
     multiToast.querySelector('b').textContent = state.selected.length;
     multiToast.querySelectorAll('[data-ma]').forEach(b => {
       b.addEventListener('click', () => {
@@ -2078,12 +2368,12 @@
 
   function groupSelection() {
     if (state.selected.length < 2) {
-      toast('Select at least 2 elements to group (Ctrl+click)', 'error');
+      toast(t('Select at least 2 elements to group (Ctrl+click)'), 'error');
       return;
     }
     const parent = state.selected[0].parentElement;
     if (!state.selected.every(s => s.parentElement === parent)) {
-      toast('Grouped elements must share the same parent', 'error');
+      toast(t('Grouped elements must share the same parent'), 'error');
       return;
     }
     pushUndo();
@@ -2095,13 +2385,13 @@
     ordered[0].parentElement.insertBefore(group, ordered[0]);
     ordered.forEach(s => group.appendChild(s));
     setSelection([group]);
-    toast('Grouped — drag to move together', 'success');
+    toast(t('Grouped — drag to move together'), 'success');
   }
 
   function ungroupSelection() {
     const group = state.selected.find(s => s.hasAttribute('data-hve-group'));
     if (!group) {
-      toast('Select a group first (teal dashed outline)', 'error');
+      toast(t('Select a group first (teal dashed outline)'), 'error');
       return;
     }
     pushUndo();
@@ -2110,7 +2400,7 @@
     children.forEach(c => parent.insertBefore(c, group));
     group.remove();
     setSelection(children);
-    toast('Ungrouped', 'info');
+    toast(t('Ungrouped'), 'info');
   }
 
   function selectParent() {
@@ -2177,10 +2467,10 @@
       const candidates = parent === document.body
         ? topLevelElements()
         : Array.from(parent.children).filter(c => c.nodeType === 1 && !isUI(c));
-      return candidates.filter(t => {
-        if (t.hasAttribute('data-hve-locked')) return false;
-        if (t.tagName === 'SCRIPT' || t.tagName === 'STYLE') return false;
-        const tr = t.getBoundingClientRect();
+      return candidates.filter(cd => {
+        if (cd.hasAttribute('data-hve-locked')) return false;
+        if (cd.tagName === 'SCRIPT' || cd.tagName === 'STYLE') return false;
+        const tr = cd.getBoundingClientRect();
         return tr.left < r.right && tr.right > r.left && tr.top < r.bottom && tr.bottom > r.top;
       });
     };
@@ -2246,9 +2536,9 @@
     const panel = el('div', { 'class': 'hve-side-panel', 'data-hve-ui': '', style: 'width:340px' });
     panel.innerHTML = `
       <div class="hve-sp-header">
-        <span class="hve-sp-title">Page Sorter</span>
+        <span class="hve-sp-title">${t('Page Sorter')}</span>
         <span class="hve-sp-count" id="hve-ps-count"></span>
-        <button class="hve-sp-close" title="Close">✕</button>
+        <button class="hve-sp-close" title="${t('Close')}">✕</button>
       </div>
       <div class="hve-sp-body" id="hve-ps-list"></div>`;
     panel.querySelector('.hve-sp-close').addEventListener('click', () => togglePanel('pages'));
@@ -2257,12 +2547,12 @@
     return panel;
   }
 
-  function pageName(t) {
-    const h = t.matches('h1,h2,h3,h4,h5,h6') ? t : t.querySelector('h1,h2,h3,h4,h5,h6');
+  function pageName(block) {
+    const h = block.matches('h1,h2,h3,h4,h5,h6') ? block : block.querySelector('h1,h2,h3,h4,h5,h6');
     if (h && h.textContent.trim()) return h.textContent.trim().slice(0, 42);
-    const txt = t.textContent.trim().replace(/\s+/g, ' ');
+    const txt = block.textContent.trim().replace(/\s+/g, ' ');
     if (txt) return txt.slice(0, 42);
-    return '<' + t.tagName.toLowerCase() + '>';
+    return '<' + block.tagName.toLowerCase() + '>';
   }
 
   function refreshPagePanel() {
@@ -2272,23 +2562,23 @@
     if (!list) return;
     const els = topLevelElements();
     list.innerHTML = '';
-    if (count) count.textContent = els.length + ' blocks';
-    els.forEach((t, i) => {
-      const item = el('div', { 'class': 'hve-ps-item' + (state.selected.includes(t) ? ' active' : '') });
+    if (count) count.textContent = t('{n} blocks', { n: els.length });
+    els.forEach((blk, i) => {
+      const item = el('div', { 'class': 'hve-ps-item' + (state.selected.includes(blk) ? ' active' : '') });
       item.innerHTML = `
         <span class="hve-ps-num"></span>
         <span class="hve-ps-name"></span>
         <span class="hve-ps-actions">
-          <button class="hve-ps-btn" data-op="up" title="Move up">↑</button>
-          <button class="hve-ps-btn" data-op="down" title="Move down">↓</button>
-          <button class="hve-ps-btn" data-op="del" title="Delete">🗑</button>
+          <button class="hve-ps-btn" data-op="up" title="${t('Move up')}">↑</button>
+          <button class="hve-ps-btn" data-op="down" title="${t('Move down')}">↓</button>
+          <button class="hve-ps-btn" data-op="del" title="${t('Delete')}">🗑</button>
         </span>`;
       item.querySelector('.hve-ps-num').textContent = i + 1;
-      item.querySelector('.hve-ps-name').textContent = pageName(t);
+      item.querySelector('.hve-ps-name').textContent = pageName(blk);
       item.addEventListener('click', (e) => {
         if (e.target.closest('.hve-ps-btn')) return;
-        setSelection([t]);
-        t.scrollIntoView({ block: 'start', behavior: 'smooth' });
+        setSelection([blk]);
+        blk.scrollIntoView({ block: 'start', behavior: 'smooth' });
         refreshPagePanel();
       });
       item.querySelectorAll('.hve-ps-btn').forEach(b => {
@@ -2296,22 +2586,22 @@
           const op = b.dataset.op;
           if (op === 'up' || op === 'down') {
             pushUndo();
-            if (op === 'up' && t.previousElementSibling && t.previousElementSibling !== uiRoot) {
-              t.parentElement.insertBefore(t, t.previousElementSibling);
-            } else if (op === 'down' && t.nextElementSibling && !isUI(t.nextElementSibling)) {
-              t.parentElement.insertBefore(t, t.nextElementSibling.nextElementSibling);
+            if (op === 'up' && blk.previousElementSibling && blk.previousElementSibling !== uiRoot) {
+              blk.parentElement.insertBefore(blk, blk.previousElementSibling);
+            } else if (op === 'down' && blk.nextElementSibling && !isUI(blk.nextElementSibling)) {
+              blk.parentElement.insertBefore(blk, blk.nextElementSibling.nextElementSibling);
             }
           } else if (op === 'del') {
             pushUndo();
-            t.remove();
-            if (state.selected.includes(t)) clearSelection();
+            blk.remove();
+            if (state.selected.includes(blk)) clearSelection();
           }
           refreshPagePanel();
         });
       });
       list.appendChild(item);
     });
-    if (!els.length) list.appendChild(el('div', { 'class': 'hve-ps-empty' }, 'No page blocks found.'));
+    if (!els.length) list.appendChild(el('div', { 'class': 'hve-ps-empty' }, t('No page blocks found.')));
   }
 
   /* ---- chart typography panel ---- */
@@ -2400,21 +2690,21 @@
     const panel = el('div', { 'class': 'hve-side-panel', 'data-hve-ui': '' });
     panel.innerHTML = `
       <div class="hve-sp-header">
-        <span class="hve-sp-title">Chart Typography</span>
-        <button class="hve-sp-close" title="Close">✕</button>
+        <span class="hve-sp-title">${t('Chart Typography')}</span>
+        <button class="hve-sp-close" title="${t('Close')}">✕</button>
       </div>
       <div class="hve-sp-body">
-        <div class="hve-chart-section-title">Templates</div>
+        <div class="hve-chart-section-title">${t('Templates')}</div>
         <div class="hve-chart-grid" id="hve-chart-grid"></div>
-        <div class="hve-chart-section-title" style="margin-top:14px;">Fine-tune selected</div>
-        <div class="hve-chart-ctrl"><label>Font size</label><input type="range" id="hve-ct-size" min="8" max="48" value="14"><span class="hve-ctrl-val" id="hve-ct-size-v">14px</span></div>
-        <div class="hve-chart-ctrl"><label>Font weight</label><select id="hve-ct-weight">
-          <option value="300">300 Light</option><option value="400">400 Regular</option>
-          <option value="500">500 Medium</option><option value="600">600 Semibold</option>
-          <option value="700" selected>700 Bold</option><option value="800">800 Extrabold</option>
+        <div class="hve-chart-section-title" style="margin-top:14px;">${t('Fine-tune selected')}</div>
+        <div class="hve-chart-ctrl"><label>${t('Font size')}</label><input type="range" id="hve-ct-size" min="8" max="48" value="14"><span class="hve-ctrl-val" id="hve-ct-size-v">14px</span></div>
+        <div class="hve-chart-ctrl"><label>${t('Font weight')}</label><select id="hve-ct-weight">
+          <option value="300">${t('300 Light')}</option><option value="400">${t('400 Regular')}</option>
+          <option value="500">${t('500 Medium')}</option><option value="600">${t('600 Semibold')}</option>
+          <option value="700" selected>${t('700 Bold')}</option><option value="800">${t('800 Extrabold')}</option>
         </select></div>
-        <div class="hve-chart-ctrl"><label>Letter spacing</label><input type="range" id="hve-ct-ls" min="0" max="8" step="0.5" value="0"><span class="hve-ctrl-val" id="hve-ct-ls-v">0px</span></div>
-        <div class="hve-chart-ctrl"><label>Line height</label><select id="hve-ct-lh">
+        <div class="hve-chart-ctrl"><label>${t('Letter spacing')}</label><input type="range" id="hve-ct-ls" min="0" max="8" step="0.5" value="0"><span class="hve-ctrl-val" id="hve-ct-ls-v">0px</span></div>
+        <div class="hve-chart-ctrl"><label>${t('Line height')}</label><select id="hve-ct-lh">
           <option value="1.2">1.2</option><option value="1.4">1.4</option><option value="1.6">1.6</option>
           <option value="1.8">1.8</option><option value="2">2.0</option>
         </select></div>
@@ -2425,13 +2715,13 @@
     panel.querySelector('.hve-sp-close').addEventListener('click', () => togglePanel('chart'));
 
     const grid = $('#hve-chart-grid', panel);
-    CHART_TEMPLATES.forEach(t => {
-      const tile = el('button', { 'class': 'hve-chart-tile', title: 'Insert ' + t.name });
-      tile.innerHTML = `<span class="hve-ct-icon">${t.icon}</span><span class="hve-ct-name"></span>`;
-      tile.querySelector('.hve-ct-name').textContent = t.name;
+    CHART_TEMPLATES.forEach(tp => {
+      const tile = el('button', { 'class': 'hve-chart-tile', title: t('Insert {name}', { name: t(tp.name) }) });
+      tile.innerHTML = `<span class="hve-ct-icon">${tp.icon}</span><span class="hve-ct-name"></span>`;
+      tile.querySelector('.hve-ct-name').textContent = t(tp.name);
       tile.addEventListener('click', () => {
         const wrap = document.createElement('div');
-        wrap.innerHTML = t.html;
+        wrap.innerHTML = tp.html;
         const node = wrap.firstElementChild;
         insertElements([node]);
       });
@@ -2439,7 +2729,7 @@
     });
 
     const applyToSelected = (prop, val, key) => {
-      if (!state.selected.length) { toast('Select an element first', 'error'); return; }
+      if (!state.selected.length) { toast(t('Select an element first'), 'error'); return; }
       pushUndo(key);
       forEachSelected(s => { s.style[prop] = val; });
     };
@@ -2482,23 +2772,23 @@
     const panel = el('div', { 'class': 'hve-side-panel', 'data-hve-ui': '', style: 'width:280px' });
     panel.innerHTML = `
       <div class="hve-sp-header">
-        <span class="hve-sp-title">Export PDF</span>
-        <button class="hve-sp-close" title="Close">✕</button>
+        <span class="hve-sp-title">${t('Export PDF')}</span>
+        <button class="hve-sp-close" title="${t('Close')}">✕</button>
       </div>
       <div class="hve-sp-body">
-        <div class="hve-pdf-row"><label>Page size</label>
-          <select id="hve-pdf-size">${Object.entries(PDF_SIZES).map(([k, v]) => `<option value="${k}">${v.label}</option>`).join('')}</select>
+        <div class="hve-pdf-row"><label>${t('Page size')}</label>
+          <select id="hve-pdf-size">${Object.entries(PDF_SIZES).map(([k, v]) => `<option value="${k}">${t(v.label)}</option>`).join('')}</select>
         </div>
-        <div class="hve-pdf-row" id="hve-pdf-custom-row" style="display:none"><label>Custom size (mm)</label>
+        <div class="hve-pdf-row" id="hve-pdf-custom-row" style="display:none"><label>${t('Custom size (mm)')}</label>
           <div class="hve-pdf-custom"><input type="number" id="hve-pdf-cw" value="210" min="50" max="600"><span>×</span><input type="number" id="hve-pdf-ch" value="297" min="50" max="900"></div>
         </div>
-        <div class="hve-pdf-row"><label>Orientation</label>
+        <div class="hve-pdf-row"><label>${t('Orientation')}</label>
           <div class="hve-pdf-toggle">
-            <button id="hve-pdf-portrait" class="active">▯ Portrait</button>
-            <button id="hve-pdf-landscape">▭ Landscape</button>
+            <button id="hve-pdf-portrait" class="active">${t('▯ Portrait')}</button>
+            <button id="hve-pdf-landscape">${t('▭ Landscape')}</button>
           </div>
         </div>
-        <div class="hve-pdf-row"><label>Margins T / R / B / L (mm)</label>
+        <div class="hve-pdf-row"><label>${t('Margins T / R / B / L (mm)')}</label>
           <div class="hve-pdf-margins">
             <input type="number" id="hve-pdf-mt" value="10" min="0" max="60">
             <input type="number" id="hve-pdf-mr" value="10" min="0" max="60">
@@ -2506,17 +2796,17 @@
             <input type="number" id="hve-pdf-ml" value="10" min="0" max="60">
           </div>
         </div>
-        <div class="hve-pdf-row"><label>Scale — <span id="hve-pdf-scale-v">100%</span></label>
+        <div class="hve-pdf-row"><label>${t('Scale')} — <span id="hve-pdf-scale-v">100%</span></label>
           <input type="range" id="hve-pdf-scale" min="50" max="150" value="100" style="width:100%;accent-color:#cc785c">
         </div>
         <div class="hve-pdf-row hve-pdf-row-compact" style="display:flex;align-items:center;gap:6px;font-size:12px;color:#3d3d3a;">
-          <input type="checkbox" id="hve-pdf-breaks" style="accent-color:#cc785c"><label for="hve-pdf-breaks" style="margin:0;cursor:pointer;">Preview page breaks</label>
+          <input type="checkbox" id="hve-pdf-breaks" style="accent-color:#cc785c"><label for="hve-pdf-breaks" style="margin:0;cursor:pointer;">${t('Preview page breaks')}</label>
         </div>
         <div class="hve-pdf-divider"></div>
         <div class="hve-pdf-info" id="hve-pdf-info"></div>
         <div class="hve-pdf-actions">
-          <button class="hve-pdf-btn-primary" id="hve-pdf-export">⬇ Export PDF</button>
-          <button class="hve-pdf-btn" id="hve-pdf-print">🖨 Print / Save as PDF</button>
+          <button class="hve-pdf-btn-primary" id="hve-pdf-export">${t('⬇ Export PDF')}</button>
+          <button class="hve-pdf-btn" id="hve-pdf-print">${t('🖨 Print / Save as PDF')}</button>
         </div>
       </div>`;
     panel.querySelector('.hve-sp-close').addEventListener('click', () => togglePanel('pdf'));
@@ -2562,7 +2852,7 @@
       const pxPerMm = bodyW / d.cw;
       const pages = Math.max(1, Math.ceil((document.body.scrollHeight - pdfState.margins[0] * pxPerMm * 0) / (d.ch * pxPerMm)));
       $('#hve-pdf-info', panel).textContent =
-        d.w + '×' + d.h + 'mm · ' + pdfState.orient + ' · ' + pages + ' page' + (pages > 1 ? 's' : '');
+        d.w + '×' + d.h + 'mm · ' + t(pdfState.orient) + ' · ' + t('{n} page(s)', { n: pages });
       renderPdfBreakPreview();
     }
     updatePdfInfo();
@@ -2572,7 +2862,7 @@
   function pdfDims() {
     let { w, h } = PDF_SIZES[pdfState.size] || PDF_SIZES.a4;
     if (pdfState.size === 'custom') { w = pdfState.customW; h = pdfState.customH; }
-    if (pdfState.orient === 'landscape') { const t = w; w = h; h = t; }
+    if (pdfState.orient === 'landscape') { const tw = w; w = h; h = tw; }
     const [mt, mr, mb, ml] = pdfState.margins;
     return { w, h, cw: Math.max(10, w - ml - mr), ch: Math.max(10, h - mt - mb) };
   }
@@ -2590,7 +2880,7 @@
     for (let y = pageH, p = 2; y < total - 10; y += pageH, p++) {
       const line = el('div', { 'class': 'hve-pdf-breakline' });
       line.style.top = y + 'px';
-      line.innerHTML = `<span class="hve-pb-label">Page ${p} starts here</span>`;
+      line.innerHTML = `<span class="hve-pb-label">${t('Page {n} starts here', { n: p })}</span>`;
       pdfBreakOverlay.appendChild(line);
     }
     document.body.appendChild(pdfBreakOverlay);
@@ -2618,14 +2908,14 @@
     const btn = $('#hve-pdf-export');
     try {
       btn.disabled = true;
-      btn.textContent = 'Generating…';
-      toast('Generating PDF…', 'info');
+      btn.textContent = t('Generating…');
+      toast(t('Generating PDF…'), 'info');
       await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
       await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
     } catch (err) {
       btn.disabled = false;
-      btn.textContent = '⬇ Export PDF';
-      toast('PDF libraries need network — using print instead', 'error');
+      btn.textContent = t('⬇ Export PDF');
+      toast(t('PDF libraries need network — using print instead'), 'error');
       printDocument();
       return;
     }
@@ -2683,15 +2973,15 @@
 
       const name = (state.fileName || 'untitled').replace(/\.html?$/i, '') + '.pdf';
       pdf.save(name);
-      toast('PDF exported ✓', 'success');
+      toast(t('PDF exported ✓'), 'success');
     } catch (err) {
       console.error('[HVE PDF]', err);
-      toast('PDF export failed: ' + err.message, 'error');
+      toast(t('PDF export failed: {msg}', { msg: err.message }), 'error');
     } finally {
       uiRoot.style.display = prevDisplay;
       if (prevPad) document.documentElement.classList.add('hve-on');
       btn.disabled = false;
-      btn.textContent = '⬇ Export PDF';
+      btn.textContent = t('⬇ Export PDF');
     }
   }
 
@@ -2735,7 +3025,7 @@
     a.click();
     a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-    toast('Saved ' + (state.fileName || 'untitled.html'), 'success');
+    toast(t('Saved {name}', { name: state.fileName || 'untitled.html' }), 'success');
   }
 
   function openFilePicker() {
@@ -2751,7 +3041,7 @@
         const text = await file.text();
         loadDocument(text, file.name);
       } catch (err) {
-        toast('Could not read file: ' + err.message, 'error');
+        toast(t('Could not read file: {msg}', { msg: err.message }), 'error');
       }
     });
     document.body.appendChild(input);
@@ -2761,7 +3051,7 @@
   function loadDocument(html, name) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
-    if (!doc.body) { toast('Invalid HTML file', 'error'); return; }
+    if (!doc.body) { toast(t('Invalid HTML file'), 'error'); return; }
 
     if (state.editingEl) exitTextEdit();
     clearSelection();
@@ -2784,7 +3074,14 @@
       document.head.appendChild(copy);
     });
     const title = doc.querySelector('title');
-    if (title) document.title = title.textContent;
+    if (title) { document.title = title.textContent; origTitle = title.textContent; }
+    const md = doc.querySelector('meta[name="description"]');
+    if (md) origDesc = md.getAttribute('content') || '';
+
+    // a fresh document: reset translation cache, re-apply current language
+    docOrig.clear();
+    document.documentElement.lang = state.lang === 'zh' ? 'zh-CN' : 'en';
+    applyDocumentLang();
 
     state.fileName = name || '';
     $('#hve-cb-filename').textContent = state.fileName;
@@ -2792,7 +3089,7 @@
     state.redoStack = [];
     updateHistoryButtons();
     window.scrollTo(0, 0);
-    toast('Opened ' + (state.fileName || 'document') + ' — click Edit to start', 'success');
+    toast(t('Opened {name} — click Edit to start', { name: state.fileName || 'document' }), 'success');
   }
 
   /* ---------------------------------------------------------
@@ -2809,7 +3106,7 @@
         const blob = it.getAsFile();
         const reader = new FileReader();
         reader.onload = () => {
-          insertElements([makeImage(reader.result, 'Pasted image')]);
+          insertElements([makeImage(reader.result, t('Pasted image'))]);
         };
         reader.readAsDataURL(blob);
         return;
@@ -2859,7 +3156,7 @@
       };
       reader.readAsDataURL(f);
     });
-    if (!inserted) toast('Only image files can be dropped', 'error');
+    if (!inserted) toast(t('Only image files can be dropped'), 'error');
   }
 
   document.addEventListener('dragenter', () => { dragDepth++; });
@@ -2890,11 +3187,11 @@
       return;
     }
     // typing inside editor inputs (dialogs, hex field) — let them work
-    const t = e.target;
-    if (t && t !== document.body && (t.tagName === 'INPUT' || t.tagName === 'SELECT' || t.tagName === 'TEXTAREA') && isUI(t)) {
+    const kt = e.target;
+    if (kt && kt !== document.body && (kt.tagName === 'INPUT' || kt.tagName === 'SELECT' || kt.tagName === 'TEXTAREA') && isUI(kt)) {
       return;
     }
-    if (t && t.tagName === 'INPUT' && !isUI(t)) return; // page's own inputs
+    if (kt && kt.tagName === 'INPUT' && !isUI(kt)) return; // page's own inputs
 
     const k = e.key.toLowerCase();
     const mod = modKey(e);
@@ -2971,6 +3268,13 @@
   function init() {
     buildUI();
 
+    // language: default Chinese, remember the last choice
+    origTitle = document.title;
+    const md = document.querySelector('meta[name="description"]');
+    if (md) origDesc = md.getAttribute('content') || '';
+    applyHeadLang();
+    applyDocumentLang();
+
     document.addEventListener('mouseover', onMouseOver);
     document.addEventListener('mousedown', onMouseDown, true);
     document.addEventListener('dblclick', onDoubleClick);
@@ -3012,6 +3316,6 @@
   // public API (handy for debugging / automation)
   window.HVE = {
     state, undo, redo, saveAs, toggleEditMode, openFilePicker,
-    setSelection, toast, serializeDocument
+    setSelection, toast, serializeDocument, setLang, t
   };
 })();

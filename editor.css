@@ -101,7 +101,7 @@ th[data-hve-editing] {
   backdrop-filter: blur(10px);
   border-bottom: 1px solid #e6dfd8;
   z-index: 2147483640;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   user-select: none;
   box-sizing: border-box;
 }
@@ -148,6 +148,10 @@ html.hve-on body {
   letter-spacing: 0.3px;
 }
 
+.hve-cb-btn #hve-cb-lang-label, .hve-cb-lang-label {
+  font-weight: 700;
+  letter-spacing: .5px;
+}
 .hve-cb-btn {
   display: inline-flex;
   align-items: center;
@@ -218,7 +222,7 @@ html.hve-on body {
   border-radius: 14px;
   box-shadow: 0 4px 24px rgba(20, 20, 19, 0.12), 0 1px 4px rgba(20, 20, 19, 0.08);
   z-index: 2147483638;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   user-select: none;
   max-width: calc(100vw - 16px);
   overflow-x: auto;
@@ -353,7 +357,7 @@ html.hve-on .hve-toolbar {
   min-width: 150px;
   max-height: 340px;
   overflow-y: auto;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   animation: hve-pop-in 0.14s ease;
 }
 
@@ -428,7 +432,7 @@ html.hve-on .hve-toolbar {
   padding: 12px;
   z-index: 2147483646;
   width: 248px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   animation: hve-pop-in 0.14s ease;
 }
 
@@ -523,7 +527,7 @@ html.hve-on .hve-toolbar {
   padding: 8px;
   min-width: 250px;
   max-width: 300px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   animation: hve-pop-in 0.16s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -634,7 +638,7 @@ html.hve-on .hve-toolbar {
   box-shadow: 0 8px 32px rgba(20, 20, 19, 0.16);
   padding: 6px;
   min-width: 200px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   animation: hve-pop-in 0.13s ease;
 }
 
@@ -713,7 +717,7 @@ html.hve-on .hve-toolbar {
   padding: 26px;
   min-width: 330px;
   max-width: 92vw;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   animation: hve-dialog-in 0.22s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -827,7 +831,7 @@ html.hve-on .hve-toolbar {
   align-items: center;
   gap: 8px;
   pointer-events: none;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
 }
 
 .hve-toast {
@@ -876,7 +880,7 @@ html.hve-on .hve-toolbar {
   color: #fff;
   border: none;
   border-radius: 24px;
-  font: 500 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font: 500 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   box-shadow: 0 4px 16px rgba(204, 120, 92, 0.35);
   cursor: pointer;
   user-select: none;
@@ -915,7 +919,7 @@ html:not(.hve-on) .hve-status .hve-status-dot {
   background: #faf9f5;
   border: 1px solid #e6dfd8;
   border-radius: 14px;
-  font: 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font: 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   color: #3d3d3a;
   box-shadow: 0 4px 16px rgba(20, 20, 19, 0.12);
   user-select: none;
@@ -1137,7 +1141,7 @@ html:not(.hve-on) .hve-status .hve-status-dot {
   border-radius: 16px;
   box-shadow: 0 8px 40px rgba(20, 20, 19, 0.18), 0 2px 8px rgba(20, 20, 19, 0.08);
   z-index: 2147483644;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -1576,7 +1580,7 @@ html:not(.hve-on) .hve-status .hve-status-dot {
   position: absolute;
   left: 12px;
   top: -20px;
-  font: 10px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font: 10px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   color: #fff;
   background: #cc785c;
   padding: 3px 8px;
@@ -1609,7 +1613,7 @@ html:not(.hve-on) .hve-status .hve-status-dot {
   border: 2px solid #cc785c;
   border-radius: 20px;
   box-shadow: 0 8px 40px rgba(204, 120, 92, 0.2);
-  font: 600 16px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font: 600 16px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   color: #cc785c;
 }
 

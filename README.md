@@ -7,6 +7,11 @@ re-implemented with original code, zero libraries at runtime).
 Open **index.html** in any modern browser and press **Edit**. No build step,
 no server, no sign-up.
 
+**Bilingual UI**: the interface defaults to **Chinese (简体中文)** and can be
+switched to English at any time with the **中/EN** button in the top bar —
+landing page, menus, dialogs, toasts and even inserted placeholder content
+follow the chosen language. The choice is remembered in `localStorage`.
+
 ## Files
 
 | File | Purpose |
@@ -68,10 +73,12 @@ restores scroll position.
 
 ```bash
 cd tests
-node test-editor.mjs   # 50 checks — core interactions
+node test-editor.mjs   # 50 checks — core interactions (English UI)
 node test-editor2.mjs  # 17 checks — floating drag, snap guides, marquee,
                        # tables, format brush, layer ops, undo/redo
+node test-i18n.mjs     # 36 checks — bilingual UI, default Chinese, switching,
+                       # persistence, translated menus/dialogs/factories
 ```
 (Requires `playwright` installed in the working directory.)
 
-All **67/67** checks pass.
+All **103/103** checks pass.

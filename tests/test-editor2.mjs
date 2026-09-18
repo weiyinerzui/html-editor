@@ -10,6 +10,8 @@ function check(name, cond) { results.push([cond ? 'PASS' : 'FAIL', name]); conso
 
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+// force the English UI so the assertions below stay stable
+await page.addInitScript(() => { try { localStorage.setItem('hve-lang', 'en'); } catch (e) {} });
 const errors = [];
 page.on('pageerror', e => errors.push('PAGEERROR: ' + e.message));
 page.on('console', m => { if (m.type() === 'error') errors.push('CONSOLE: ' + m.text()); });
