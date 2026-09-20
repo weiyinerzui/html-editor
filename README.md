@@ -83,3 +83,12 @@ node test-i18n.mjs     # 48 checks — bilingual UI, default Chinese, switching,
 (Requires `playwright` installed in the working directory.)
 
 All **115/115** checks pass.
+
+## 🌐 Online deployment
+
+Live URL (Cloudflare Pages):
+
+**https://visual-html-editor-2zm.pages.dev**
+
+Deployed with `wrangler pages deploy dist --project-name visual-html-editor --branch production`.
+The `dist/` folder is a clean copy of `index.html` + `editor.css` + `editor.js`.
